@@ -691,6 +691,23 @@ function pickKasir() {
 /* ============================================================
    TAB KASIR
    ============================================================ */
+/* tanggal transaksi (input susulan): hanya tanggal, jam ikut jam sekarang */
+function bizDate() { const t = today(); return S.tglInput && /^\d{4}-\d{2}-\d{2}$/.test(S.tglInput) && S.tglInput < t ? S.tglInput : t; }
+function bizAt() { const n = getNow(), bd = bizDate(); if (bd === today()) return n; const [y, m, d] = bd.split('-').map(Number); return new Date(y, m - 1, d, n.getHours(), n.getMinutes()); }
+function tglField() {
+  return `<label class="f">Tanggal <span style="text-transform:none;font-weight:400">(ubah kalau input susulan)</span></label>
+    <input class="in" type="date" id="f-tgl" max="${today()}" value="${bizDate()}"><div class="hint" id="tgl-hint" style="margin-top:6px"></div>`;
+}
+function tglHint() {
+  const h = $('#tgl-hint'); if (!h) return; const bd = bizDate(), on = bd !== today();
+  const [y, m, d] = bd.split('-'); h.innerHTML = on ? `<b style="color:#b7791f">Input susulan: akan tercatat tanggal ${d}/${m}/${y}.</b> <a href="#" id="tgl-reset" style="color:var(--royal)">Kembali ke hari ini</a>` : '';
+  const r = $('#tgl-reset'); if (r) r.onclick = e => { e.preventDefault(); S.tglInput = ''; $('#f-tgl').value = today(); tglHint(); refreshDateLists(); };
+}
+function refreshDateLists() { if (S.tab === 'kasir') renderToday(); else if (S.tab === 'pengeluaran') renderExpToday(); }
+function setupTgl() {
+  const el = $('#f-tgl'); if (!el) return; tglHint();
+  el.onchange = el.oninput = () => { const v = el.value; S.tglInput = (!v || v >= today()) ? '' : v; if (!v || v > today()) { el.value = today(); if (v > today()) toast('Tanggal tidak boleh di masa depan'); } tglHint(); refreshDateLists(); };
+}
 function vKasir() {
   const s = ST(), F = S.form;
   $('#main').innerHTML = `<div class="grid-2">
@@ -715,6 +732,7 @@ function vKasir() {
       </div>
       <label class="f">Catatan <span style="text-transform:none;font-weight:400">(opsional)</span></label>
       <input class="in" id="f-cat" placeholder="misal: jam antar, permintaan khusus">
+      ${tglField()}
       <div class="total-line"><span id="tl">Total</span><b id="tv">Rp 0</b></div>
       <button class="btn" id="simpan">Simpan transaksi</button>
     </div>
@@ -730,7 +748,7 @@ function vKasir() {
   $('#f-jml').oninput = calc; $('#f-uk').onchange = calc;
   $('#jm').onclick = () => { $('#f-jml').value = Math.max(1, (parseInt($('#f-jml').value) || 1) - 1); calc(); };
   $('#jp').onclick = () => { $('#f-jml').value = (parseInt($('#f-jml').value) || 0) + 1; calc(); };
-  setupSuggest();
+  setupSuggest(); setupTgl();
   $('#simpan').onclick = saveTrx;
   renderToday(); renderRcpt();
 }
@@ -782,13 +800,14 @@ function saveTrx() {
     if (!F.ambil) return toast('Pilih dulu "Ambil sendiri" atau "Diantar" ya.', 3500);
     if (!F.bayar) return toast('Pilih dulu metode pembayarannya (Tunai/QRIS/Transfer).', 3500);
   }
-  const now = getNow(), kasir = S.kasir || 'Tidak diketahui';
+  const now = bizAt(), kasir = S.kasir || 'Tidak diketahui', susulan = bizDate() !== today();
   let t;
-  if (as) t = { id: uid('t'), date: dstr(now), time: hhmm(now), at: nowISO(), customerId: null, customerName: nama, jumlah, ukuran, catatan, antar: false, address: '', payment: '', isAsrama: true, kasir, total: 0, log: [] };
+  if (as) t = { id: uid('t'), date: dstr(now), time: hhmm(now), at: now.toISOString(), customerId: null, customerName: nama, jumlah, ukuran, catatan, antar: false, address: '', payment: '', isAsrama: true, kasir, total: 0, log: [] };
   else {
     const addr = $('#f-alamat').value.trim(), cust = findOrCreateCust(nama, addr), antar = F.ambil === 'antar';
-    t = { id: uid('t'), date: dstr(now), time: hhmm(now), at: nowISO(), customerId: cust.id, customerName: cust.name, jumlah, ukuran, catatan, antar, address: antar ? addr : (cust.address || ''), payment: F.bayar, isAsrama: false, kasir, total: jumlah * getHarga(ukuran, antar ? 'antar' : 'ambil'), log: [] };
+    t = { id: uid('t'), date: dstr(now), time: hhmm(now), at: now.toISOString(), customerId: cust.id, customerName: cust.name, jumlah, ukuran, catatan, antar, address: antar ? addr : (cust.address || ''), payment: F.bayar, isAsrama: false, kasir, total: jumlah * getHarga(ukuran, antar ? 'antar' : 'ambil'), log: [] };
   }
+  if (susulan) addLog(t, 'Input susulan', 'Dicatat tanggal ' + t.date + ' (diinput ' + today() + ')');
   DB.put('trx', t, t.date);
   S.rcpt = t.id;
   $('#f-nama').value = ''; $('#f-asr').value = ''; $('#f-jml').value = 1; $('#f-cat').value = ''; $('#f-alamat').value = '';
@@ -804,14 +823,14 @@ function renderRcpt() {
   strukActions(t, $('#ra', box));
   $('#done').onclick = async () => {
     if (!await ask({ title: 'Transaksi selesai?', body: 'Nota ditutup dan kamu diminta pilih kasir lagi untuk transaksi berikutnya.' })) return;
-    S.rcpt = null; S.kasir = ''; lsSet('kasir', ''); shell(); render(); pickKasir();
+    S.rcpt = null; S.tglInput = ''; S.kasir = ''; lsSet('kasir', ''); shell(); render(); pickKasir();
   };
 }
 function renderToday() {
   const wrap = $('#today'); if (!wrap) return;
-  const list = trxOn(today());
-  $('#th').textContent = `Transaksi hari ini (${list.length})`;
-  if (!list.length) { wrap.innerHTML = '<div class="empty">Belum ada transaksi hari ini.</div>'; return; }
+  const bd = bizDate(), isT = bd === today(), list = trxOn(bd), lbl = isT ? 'hari ini' : 'tanggal ' + bd.split('-').reverse().join('/');
+  $('#th').textContent = `Transaksi ${lbl} (${list.length})`;
+  if (!list.length) { wrap.innerHTML = `<div class="empty">Belum ada transaksi ${lbl}.</div>`; return; }
   wrap.innerHTML = list.map(t => `<div class="item"><div class="main"><div class="t">${esc(t.customerName)} ${t.antar ? '<span class="tag antar">ANTAR</span>' : ''} ${t.isAsrama ? '<span class="tag asrama">ASRAMA</span>' : ''}</div>
     <div class="s">${t.jumlah} galon · ${hhmmOf(t)}${t.catatan ? ' · ' + esc(t.catatan) : ''} · oleh ${esc(t.kasir || '-')}</div></div>
     <div class="v">${t.isAsrama ? 'Internal' : rp(t.total)}</div>
@@ -940,26 +959,28 @@ function vPengeluaran() {
     <label class="f">Jumlah biaya (Rp)<input class="in" id="x-jml" type="number" inputmode="numeric" min="0" placeholder="0"></label>
     <label class="f">Bukti pengeluaran</label><div class="seg" id="g-bukti"><button data-v="Bon">Bon</button><button data-v="Kwitansi">Kwitansi</button><button data-v="Nota">Nota</button></div>
     <label class="f">Keterangan (opsional)<input class="in" id="x-ket" placeholder="misal: beli di toko Pak Anto"></label>
+    ${tglField()}
     <button class="btn" id="x-save">Simpan pengeluaran</button></div>
-    <div class="sec"><div class="stat hero"><span>Total pengeluaran hari ini</span><b id="x-tot">Rp 0</b></div>
+    <div class="sec"><div class="stat hero"><span id="x-tt">Total pengeluaran hari ini</span><b id="x-tot">Rp 0</b></div>
     <div class="card"><h2 id="x-h">Pengeluaran hari ini</h2><div id="x-list" class="list"></div></div></div></div>`;
-  paintSeg('#g-bukti', S.expBukti);
+  paintSeg('#g-bukti', S.expBukti); setupTgl();
   $$('#g-bukti button').forEach(b => b.onclick = () => { S.expBukti = S.expBukti === b.dataset.v ? '' : b.dataset.v; paintSeg('#g-bukti', S.expBukti); });
   $('#x-save').onclick = () => {
     const kategori = $('#x-kat').value, jumlahBiaya = Math.max(0, parseInt($('#x-jml').value) || 0), keterangan = $('#x-ket').value.trim();
     if (jumlahBiaya <= 0) return toast('Isi jumlah biayanya dulu ya');
     if (!S.expBukti) return toast('Pilih dulu bukti pengeluarannya (Bon/Kwitansi/Nota)', 3500);
-    const now = getNow();
-    DB.put('exp', { id: uid('e'), date: dstr(now), time: hhmm(now), at: nowISO(), kategori, jumlahBiaya, bukti: S.expBukti, keterangan, kasir: S.kasir || 'Tidak diketahui', log: [] }, dstr(now));
+    const now = bizAt(), susulan = bizDate() !== today(); const ex = { id: uid('e'), date: dstr(now), time: hhmm(now), at: now.toISOString(), kategori, jumlahBiaya, bukti: S.expBukti, keterangan, kasir: S.kasir || 'Tidak diketahui', log: [] };
+    if (susulan) addLog(ex, 'Input susulan', 'Dicatat tanggal ' + ex.date + ' (diinput ' + today() + ')');
+    DB.put('exp', ex, dstr(now));
     $('#x-jml').value = ''; $('#x-ket').value = ''; S.expBukti = ''; paintSeg('#g-bukti', ''); renderExpToday(); toast('Pengeluaran tersimpan');
   };
   renderExpToday();
 }
 function renderExpToday() {
   const wrap = $('#x-list'); if (!wrap) return;
-  const l = expOn(today());
-  $('#x-tot').textContent = rp(sum(l, e => e.jumlahBiaya)); $('#x-h').textContent = `Pengeluaran hari ini (${l.length})`;
-  if (!l.length) { wrap.innerHTML = '<div class="empty">Belum ada pengeluaran hari ini.</div>'; return; }
+  const bd = bizDate(), isT = bd === today(), l = expOn(bd), lbl = isT ? 'hari ini' : 'tanggal ' + bd.split('-').reverse().join('/');
+  $('#x-tot').textContent = rp(sum(l, e => e.jumlahBiaya)); $('#x-h').textContent = `Pengeluaran ${lbl} (${l.length})`; const tt = $('#x-tt'); if (tt) tt.textContent = `Total pengeluaran ${lbl}`;
+  if (!l.length) { wrap.innerHTML = `<div class="empty">Belum ada pengeluaran ${lbl}.</div>`; return; }
   wrap.innerHTML = l.map(e => `<div class="item"><div class="main"><div class="t">${esc(e.kategori)}</div><div class="s">${hhmmOf(e)}${e.bukti ? ' · ' + esc(e.bukti) : ''}${e.keterangan ? ' · ' + esc(e.keterangan) : ''} · oleh ${esc(e.kasir || '-')}</div></div>
     <div class="v">${rp(e.jumlahBiaya)}</div><button class="mini bad" data-d="${e.id}">Hapus</button></div>`).join('');
   $$('[data-d]', wrap).forEach(b => b.onclick = () => batalExp(b.dataset.d));
