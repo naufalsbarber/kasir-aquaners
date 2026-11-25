@@ -1,0 +1,1569 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a1f55">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Kasir Aquaners</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Aquaners: navy royal + silver + cyan (palet dari logo/poster) */
+:root{
+  --navy:#0a1f55; --navy2:#12307f; --royal:#1a3aa8; --cyan:#1c9be0; --cyan2:#6cc4f2;
+  --silver:#c9cdd5; --silver2:#e8ebf0; --paper:#ffffff; --bg:#eef1f6; --line:#d8deea;
+  --ink:#0b1633; --muted:#5d6b86; --ok:#1f8a5b; --bad:#c0392b; --warn:#b7791f; --wa:#1f9d5a;
+  --f-d:"Space Grotesk","Segoe UI",system-ui,sans-serif; --f-b:"Inter","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-b);font-size:15px;-webkit-tap-highlight-color:transparent;min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.app{max-width:1120px;margin:0 auto;padding-bottom:40px}
+
+/* header */
+.top{position:sticky;top:0;z-index:5;background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;
+  padding:10px max(14px,env(safe-area-inset-right)) 10px max(14px,env(safe-area-inset-left));
+  display:flex;align-items:center;gap:12px;box-shadow:0 2px 10px rgba(5,15,50,.25)}
+.top .logo{background:linear-gradient(180deg,#d9dce2,#b9bec8);border-radius:10px;padding:3px 6px;display:flex;align-items:center;height:44px;flex:none;border:1px solid rgba(255,255,255,.5)}
+.top .logo img{height:36px;width:auto;display:block;border-radius:6px}
+.top .brand{flex:1;min-width:0}
+.top .brand small{display:block;color:var(--cyan2);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .brand b{display:block;font-family:var(--f-d);font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.clock{font-size:12px;color:#d6e2ff;text-align:right;cursor:default;line-height:1.35;white-space:nowrap}
+.clock.manual{color:#ffcf8a;font-weight:700}
+.pill{font-size:11px;padding:4px 9px;border-radius:99px;border:1px solid rgba(255,255,255,.3);color:#dbe6ff;white-space:nowrap;background:rgba(255,255,255,.06)}
+.pill.on{border-color:#4fbf8a;color:#a6efc9}.pill.off{border-color:#e58a7e;color:#ffc1b8}.pill.loc{border-color:#e6c27a;color:#ffe0a3}
+.gear{border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;width:36px;height:36px;border-radius:99px;display:inline-flex;align-items:center;justify-content:center;padding:0;flex:none}
+.gear svg{width:18px;height:18px}
+.gear.sel{background:var(--cyan);border-color:var(--cyan)}
+
+/* tabs */
+.tabs{display:flex;gap:6px;padding:12px max(14px,env(safe-area-inset-left));overflow-x:auto;position:sticky;top:64px;z-index:4;background:var(--bg)}
+.tabs button{flex:1 1 0;min-width:96px;border:1px solid var(--line);background:var(--paper);padding:12px 14px;border-radius:12px;font-weight:700;font-size:14px;color:var(--muted);white-space:nowrap}
+.tabs button.sel{background:linear-gradient(135deg,var(--royal),var(--navy2));color:#fff;border-color:var(--navy2);box-shadow:0 4px 12px -4px rgba(26,58,168,.6)}
+
+main{padding:4px max(14px,env(safe-area-inset-right)) 0 max(14px,env(safe-area-inset-left));display:flex;flex-direction:column;gap:14px}
+.grid-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:820px){.grid-2{grid-template-columns:1fr}.tabs{top:62px}}
+h1{font-family:var(--f-d);font-size:22px;margin:0}
+h2{font-family:var(--f-d);font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:12.5px;color:var(--muted);margin:0 0 12px;display:flex;align-items:center;gap:8px}
+h2 .eb{background:var(--silver2);color:var(--navy2);padding:3px 8px;border-radius:6px;font-size:10.5px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(10,31,85,.05),0 8px 20px -12px rgba(10,31,85,.18)}
+.card.dark{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-color:var(--navy)}
+.sec{display:flex;flex-direction:column;gap:10px}
+.row{display:flex;gap:10px;align-items:center}
+.between{justify-content:space-between}
+.muted{color:var(--muted)}.small{font-size:12.5px}
+.hint{font-size:12.5px;color:var(--muted);line-height:1.5}
+
+/* forms */
+label.f{display:flex;flex-direction:column;gap:6px;font-size:11.5px;color:var(--muted);font-family:var(--f-d);letter-spacing:.06em;text-transform:uppercase;font-weight:600;margin-top:12px}
+label.f:first-child{margin-top:0}
+input.in,select.in,textarea.in{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:10px;background:#fff;font-family:var(--f-b);font-size:16px;text-transform:none;letter-spacing:0;color:var(--ink)}
+input.in:focus,select.in:focus,textarea.in:focus{border-color:var(--cyan);outline:none;box-shadow:0 0 0 3px rgba(28,155,224,.2)}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{flex:1 1 0;min-width:84px;padding:12px 10px;border-radius:12px;border:1.5px solid var(--line);background:#fff;font-weight:700;font-size:14.5px;color:var(--muted)}
+.seg button.sel{background:var(--navy2);color:#fff;border-color:var(--navy2)}
+.seg.pill-s button{border-radius:99px;padding:9px 14px;flex:0 0 auto;min-width:0;font-size:13px}
+.btn{border:0;border-radius:12px;padding:14px 16px;font-weight:700;font-size:15px;background:linear-gradient(135deg,var(--royal),var(--navy2));color:#fff;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px}
+.btn.cyan{background:linear-gradient(135deg,var(--cyan),#1578c2)}
+.btn.ghost{background:#fff;color:var(--navy2);border:1.5px solid var(--line)}
+.btn.danger{background:#fff;color:var(--bad);border:1.5px solid #efc3bd}
+.btn.wa{background:var(--wa);color:#fff}
+.btn.sm{padding:9px 12px;font-size:13px;width:auto;border-radius:10px;margin-top:0}
+.btn:disabled{opacity:.5}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stepper{display:grid;grid-template-columns:52px 1fr 52px;gap:8px}
+.stepper button{border:1.5px solid var(--line);background:#fff;border-radius:10px;font-size:24px;font-weight:700;color:var(--navy2)}
+.stepper input{text-align:center;font-weight:700;font-size:20px}
+.total-line{display:flex;justify-content:space-between;align-items:baseline;margin-top:16px;padding:14px 16px;border-radius:12px;background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff}
+.total-line span:first-child{font-family:var(--f-d);letter-spacing:.08em;text-transform:uppercase;font-size:12px;color:var(--cyan2)}
+.total-line b{font-size:24px;font-variant-numeric:tabular-nums}
+.suggest{position:absolute;left:0;right:0;top:100%;background:#fff;border:1px solid var(--line);border-radius:10px;margin-top:4px;z-index:6;box-shadow:0 10px 24px -8px rgba(10,31,85,.3);overflow:hidden;display:none}
+.suggest div{padding:11px 13px;border-top:1px solid var(--line)}
+.suggest div:first-child{border-top:0}
+.suggest div:hover,.suggest div:active{background:var(--silver2)}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.stat span{display:block;font-size:11px;color:var(--muted);font-family:var(--f-d);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.stat b{display:block;font-size:20px;margin-top:4px;font-variant-numeric:tabular-nums}
+.stat.hero{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-color:var(--navy)}
+.stat.hero span{color:var(--cyan2)}
+.stat.hero b{font-size:26px}
+.stat.warn b{color:var(--warn)}.stat.bad b{color:var(--bad)}
+
+/* list */
+.list{display:flex;flex-direction:column}
+.item{display:flex;gap:10px;align-items:center;padding:11px 4px;border-top:1px solid var(--line);width:100%;background:none;border-left:0;border-right:0;border-bottom:0;text-align:left}
+.item:first-child{border-top:0}
+.item .main{flex:1;min-width:0}
+.item .t{font-weight:600;overflow:hidden;text-overflow:ellipsis}
+.item .s{font-size:12px;color:var(--muted)}
+.item .v{font-weight:700;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.item.void .t,.item.void .v{text-decoration:line-through;color:var(--muted)}
+.empty{padding:20px 14px;color:var(--muted);font-size:13.5px;text-align:center}
+.tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.04em;padding:2px 7px;border-radius:6px;vertical-align:1px}
+.tag.antar{background:#d7ecfa;color:#0f6aa8}.tag.asrama{background:#fbe6c8;color:#965a0b}.tag.void{background:#f7d9d5;color:var(--bad)}
+.tag.tunai{background:#e3e8f1;color:#33425f}.tag.qris{background:#dcdcfa;color:#3a3ab0}.tag.transfer{background:#d6f0e4;color:#1c7a50}
+.mini{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:700;color:var(--navy2)}
+.mini.bad{color:var(--bad);border-color:#efc3bd}
+
+/* receipt */
+.receipt{background:#fff;border:1px dashed #aab4cc;border-radius:14px;padding:16px;font-family:var(--f-b)}
+.receipt .logo{display:flex;justify-content:center}
+.receipt .logo img{width:170px;border-radius:8px}
+.receipt .nm{text-align:center;font-family:var(--f-d);font-weight:700;font-size:20px;letter-spacing:.06em;margin-top:6px}
+.receipt .sub{text-align:center;font-size:12px;color:var(--muted);margin-bottom:10px}
+.receipt .r{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-top:1px dashed var(--line);font-size:14px}
+.receipt .r span:first-child{color:var(--muted)}
+.receipt .r span:last-child{text-align:right;font-weight:600}
+.receipt .tot{display:flex;justify-content:space-between;margin-top:8px;padding-top:10px;border-top:2px solid var(--navy2);font-weight:800;font-size:18px}
+.receipt .ft{text-align:center;font-size:11.5px;color:var(--muted);margin-top:10px}
+.empty-receipt{padding:34px 16px;text-align:center;color:var(--muted);border:1.5px dashed var(--line);border-radius:14px;background:#fafbfd}
+
+/* table */
+.scrollx{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.tbl th{text-align:left;font-family:var(--f-d);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 6px;border-bottom:1.5px solid var(--line);white-space:nowrap}
+.tbl td{padding:9px 6px;border-bottom:1px solid #edf0f6;vertical-align:middle}
+.tbl td.r,.tbl th.r{text-align:right}.tbl tr.void td{color:#9aa5bd;text-decoration:line-through}
+.tbl tr.tot td{font-weight:800;border-top:1.5px solid var(--navy2)}
+.kv{display:flex;flex-direction:column}
+.kv div{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px dashed var(--line);font-variant-numeric:tabular-nums}
+.kv div:first-child{border-top:0}.kv div.strong{font-weight:800}
+
+/* datebar */
+.datebar{display:grid;grid-template-columns:48px 1fr 48px;gap:8px;align-items:stretch}
+.datebar>button{border:1px solid var(--line);background:#fff;border-radius:12px;font-size:24px;line-height:1;color:var(--navy2)}
+.datebar>button:disabled{opacity:.35}
+.dlabel{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 10px;cursor:pointer;min-width:0}
+.dlabel b{font-size:15px;white-space:nowrap}
+.dlabel small{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ok);font-family:var(--f-d)}
+.dlabel small.past{color:var(--warn)}
+.dlabel input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;border:0}
+
+/* chart */
+.bars{display:flex;align-items:flex-end;gap:3px;height:150px;padding-top:8px;overflow-x:auto}
+.bars .g{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:14px;flex:1}
+.bars .g i{display:block;width:70%;max-width:18px;min-height:2px;border-radius:3px 3px 0 0;background:linear-gradient(180deg,var(--cyan),var(--royal))}
+.bars.as .g i{background:linear-gradient(180deg,#f0a35a,#d4741d)}
+.bars .g em{font-style:normal;font-size:9px;color:var(--muted);height:12px}
+.bars .g u{text-decoration:none;font-size:9.5px;color:var(--muted);margin-top:3px}
+
+/* dialog */
+.scrim{position:fixed;inset:0;background:rgba(6,14,40,.55);z-index:30;display:flex;align-items:center;justify-content:center;padding:16px;animation:fade .15s}
+.sheet{background:#fff;width:100%;max-width:520px;max-height:92vh;overflow:auto;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;animation:up .18s ease-out;box-shadow:0 20px 50px -12px rgba(5,15,50,.5)}
+.sheet.wide{max-width:760px}
+.sheet .hd{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sheet h3{margin:0;font-family:var(--f-d);font-size:18px}
+.x{border:0;background:var(--silver2);width:34px;height:34px;border-radius:99px;font-size:18px;line-height:1;flex:none}
+@keyframes up{from{transform:translateY(24px);opacity:.4}to{transform:none;opacity:1}}
+@keyframes fade{from{opacity:0}}
+.sig{width:100%;height:170px;background:#fff;border:1.5px dashed #9fb0d4;border-radius:12px;touch-action:none;display:block}
+.report-img{width:100%;border-radius:12px;border:1px solid var(--line);background:#fff}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 18px;border-radius:12px;z-index:60;font-size:14px;max-width:92%;box-shadow:0 8px 24px rgba(5,15,50,.35)}
+.banner{background:#fff4e0;border:1px solid #f0d49b;color:#7a4e07;border-radius:12px;padding:10px 14px;font-size:13px}
+.ownertabs{display:flex;gap:6px;overflow-x:auto}
+.ownertabs button{border:1px solid var(--line);background:#fff;padding:9px 14px;border-radius:99px;font-weight:700;font-size:13px;white-space:nowrap;color:var(--muted)}
+.ownertabs button.sel{background:var(--navy2);color:#fff;border-color:var(--navy2)}
+.chiprow{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--silver2);border-radius:99px;padding:7px 8px 7px 12px;font-weight:600;font-size:13px}
+.chip button{border:0;background:#fff;width:22px;height:22px;border-radius:99px;font-size:13px;line-height:1;color:var(--bad)}
+.addrow{display:flex;gap:8px}.addrow .in{flex:1}.addrow .btn{width:auto;margin-top:0;padding:0 18px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>const LOGO = "data:image/jpeg;base64,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";</script>
+<script>
+/* ============================================================
+   Kasir Aquaners — web (GitHub Pages) + Supabase
+   Satu file, vanilla JS. Data: cache lokal + tabel aq_docs di Supabase.
+   ============================================================ */
+
+/* ---------- KONFIGURASI ---------- */
+const SUPABASE_URL = 'https://xoplcxpfjxjcbgncuhwd.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Qy4nN9d3xmPAVqbfFeWgaw_0jH7D02w';
+const TABLE = 'aq_docs';
+const LSP = 'aq_';
+const RECOVERY_HASH = '3f0a9f65b5ca0a950e16ab1acd332fea6dd3c5886e778957bb668a4e78aacdc9';
+const CACHE_DAYS = 75;
+const APP_ID = 'aquaners-web';
+
+/* ---------- util ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+const rp = n => 'Rp ' + Math.round(+n || 0).toLocaleString('id-ID');
+const pad = n => String(n).padStart(2, '0');
+const HARI = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+const BULAN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+let TIME_OVERRIDE = null;                                   // Date | null (uji coba, owner)
+const getNow = () => TIME_OVERRIDE ? new Date(TIME_OVERRIDE.getTime()) : new Date();
+const dstr = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());   // tanggal LOKAL, bukan UTC
+const today = () => dstr(getNow());
+const hhmm = d => pad(d.getHours()) + ':' + pad(d.getMinutes());
+const nowISO = () => getNow().toISOString();                // waktu bisnis (ikut override)
+const realISO = () => new Date().toISOString();             // waktu sinkron (selalu asli)
+const uid = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const fmtTgl = s => { const d = new Date(s + 'T00:00:00'); return HARI[d.getDay()] + ', ' + d.getDate() + ' ' + BULAN[d.getMonth()] + ' ' + d.getFullYear(); };
+const fmtTglS = s => { const d = new Date(s + 'T00:00:00'); return d.getDate() + ' ' + BULAN[d.getMonth()].slice(0, 3) + ' ' + d.getFullYear(); };
+const fmtBln = ym => { const [y, m] = ym.split('-'); return BULAN[+m - 1] + ' ' + y; };
+const addDays = (s, n) => { const d = new Date(s + 'T00:00:00'); d.setDate(d.getDate() + n); return dstr(d); };
+const daysIn = ym => { const [y, m] = ym.split('-').map(Number); return new Date(y, m, 0).getDate(); };
+const addMonths = (ym, n) => { const [y, m] = ym.split('-').map(Number); const d = new Date(y, m - 1 + n, 1); return d.getFullYear() + '-' + pad(d.getMonth() + 1); };
+const sum = (a, f) => a.reduce((s, x) => s + (+f(x) || 0), 0);
+const parseNum = s => +String(s || '').replace(/\D/g, '') || 0;
+const normWA = s => { let d = String(s || '').replace(/\D/g, ''); if (!d) return ''; if (d.startsWith('0')) d = '62' + d.slice(1); else if (!d.startsWith('62')) d = '62' + d; return d; };
+const bayarLabel = p => p === 'qris' ? 'QRIS' : p === 'transfer' ? 'Transfer' : 'Tunai';
+const lsGet = (k, def) => { try { const v = localStorage.getItem(LSP + k); return v == null ? def : JSON.parse(v); } catch (e) { return def; } };
+const lsSet = (k, v) => { try { localStorage.setItem(LSP + k, JSON.stringify(v)); return true; } catch (e) { return false; } };
+const ssGet = k => { try { return sessionStorage.getItem(LSP + k); } catch (e) { return null; } };
+const ssSet = (k, v) => { try { sessionStorage.setItem(LSP + k, v); } catch (e) { } };
+
+function toast(msg, ms = 2600) {
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), ms);
+}
+const loadedScripts = {};
+function loadScript(src) {
+  if (loadedScripts[src]) return loadedScripts[src];
+  return loadedScripts[src] = new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => { delete loadedScripts[src]; rej(new Error('gagal memuat ' + src)); };
+    document.head.appendChild(s);
+  });
+}
+const JSPDF_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+const XLSX_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+
+/* ============================================================
+   DATA STORE — dokumen {id, col, tgl, data, updated_at}
+   col: trx | cust | exp | settings | meta
+   ============================================================ */
+const DB = {
+  docs: {}, pending: {}, cfg: { url: '', key: '' }, status: 'local', lastSync: null, lastErr: '',
+  init() {
+    this.docs = lsGet('docs', {}); this.pending = lsGet('pending', {});
+    const c = lsGet('cfg', null);
+    this.cfg = c && c.url ? c : { url: SUPABASE_URL, key: SUPABASE_KEY };
+    this.status = this.online() ? 'sync' : 'local';
+  },
+  online() { return !!(this.cfg.url && this.cfg.key); },
+  headers() {
+    const h = { apikey: this.cfg.key, 'Content-Type': 'application/json' };
+    if (!this.cfg.key.startsWith('sb_')) h.Authorization = 'Bearer ' + this.cfg.key;
+    return h;
+  },
+  base() { return this.cfg.url.replace(/\/+$/, '') + '/rest/v1/' + TABLE; },
+  saveCache() {
+    const cut = addDays(dstr(new Date()), -CACHE_DAYS), out = {}, keepAll = !this.online();
+    for (const [id, d] of Object.entries(this.docs)) if (keepAll || !d.tgl || d.tgl >= cut || this.pending[id]) out[id] = d;
+    const ok1 = lsSet('docs', out), ok2 = lsSet('pending', this.pending);
+    if (!ok1 || !ok2) { this.lastErr = 'Penyimpanan lokal penuh/ditolak browser'; }
+  },
+  list(col) { return Object.values(this.docs).filter(d => d.col === col).map(d => d.data); },
+  get(id) { return this.docs[id]?.data; },
+  put(col, data, tgl = null, ts = null) {
+    const doc = { id: data.id, col, tgl, data, updated_at: ts || realISO() };
+    this.docs[data.id] = doc; this.pending[data.id] = doc; this.saveCache(); this.flush();
+    return data;
+  },
+  async flush() {
+    if (!this.online() || this._flushing) { setStatus(); return; }
+    if (!Object.keys(this.pending).length) { this.status = 'on'; setStatus(); return; }
+    this._flushing = true; this.status = 'sync'; setStatus();
+    try {
+      for (;;) {
+        const batch = Object.values(this.pending).slice(0, 300); if (!batch.length) break;
+        const r = await fetch(this.base(), { method: 'POST', headers: { ...this.headers(), Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify(batch) });
+        if (!r.ok) throw new Error(r.status + ' ' + (await r.text()).slice(0, 160));
+        for (const d of batch) if (this.pending[d.id] === d) delete this.pending[d.id];
+        this.saveCache();
+      }
+      this.status = 'on'; this.lastSync = new Date(); this.lastErr = '';
+    } catch (e) { this.status = 'off'; this.lastErr = String(e.message || e); }
+    this._flushing = false; setStatus();
+    if (this.status === 'on' && Object.keys(this.pending).length) this.flush();
+  },
+  async fetchWhere(q) {
+    const out = []; let off = 0;
+    for (;;) {
+      const r = await fetch(this.base() + '?select=id,col,tgl,data,updated_at&' + q + '&order=id&limit=1000&offset=' + off, { headers: this.headers() });
+      if (!r.ok) throw new Error(r.status + ' ' + (await r.text()).slice(0, 160));
+      const rows = await r.json(); out.push(...rows); if (rows.length < 1000) break; off += 1000;
+    }
+    return out;
+  },
+  merge(rows) {   // last-write-wins; data lokal yang belum terkirim hanya menang kalau lebih baru
+    for (const d of rows) {
+      const p = this.pending[d.id];
+      if (!p || new Date(d.updated_at) >= new Date(p.updated_at)) { this.docs[d.id] = d; delete this.pending[d.id]; }
+    }
+  },
+  async pull() {
+    if (!this.online()) { this.status = 'local'; setStatus(); return; }
+    try {
+      const from = addDays(dstr(new Date()), -CACHE_DAYS);
+      const rows = await this.fetchWhere('or=(tgl.is.null,tgl.gte.' + from + ')');
+      this.merge(rows); applyRemoteReset(); this.saveCache();
+      this.status = Object.keys(this.pending).length ? 'sync' : 'on'; this.lastSync = new Date(); this.lastErr = '';
+      this.flush();
+    } catch (e) { this.status = 'off'; this.lastErr = String(e.message || e); }
+    setStatus();
+  },
+  async remove(q) {
+    if (!this.online()) return;
+    const r = await fetch(this.base() + '?' + q, { method: 'DELETE', headers: { ...this.headers(), Prefer: 'return=minimal' } });
+    if (!r.ok) throw new Error(r.status + ' ' + (await r.text()).slice(0, 160));
+  },
+  async fetchAll() { return this.online() ? this.fetchWhere('id=not.is.null') : Object.values(this.docs); },
+  async loadRange(from, to) {   // muat data lama (di luar jendela cache) untuk laporan
+    if (!this.online()) return;
+    try { this.merge(await this.fetchWhere('tgl=gte.' + from + '&tgl=lte.' + to)); } catch (e) { toast('Gagal memuat data lama: ' + e.message); }
+  }
+};
+function setStatus() {
+  const el = $('#status'); if (!el) return;
+  const n = Object.keys(DB.pending).length;
+  const map = { local: ['loc', 'Mode lokal'], on: ['on', 'Online'], sync: ['', 'Menyimpan…'], off: ['off', 'Offline' + (n ? ' · ' + n + ' antre' : '')] };
+  const [c, t] = map[DB.status] || map.local;
+  el.className = 'pill ' + c; el.textContent = t;
+}
+
+/* ---------- pengaturan ---------- */
+const DEF_SETTINGS = {
+  id: 'settings', toko: 'AQUANERS', tagline: 'Steril Refill Water',
+  alamat: 'Jl. Ahmad No.9, Pamoyanan, Cicendo, Bandung', kontak: 'Antar-jemput: 022-6070855 / 082119756778',
+  footer: 'Terima kasih sudah refill di Aquaners',
+  pin: '123456',
+  harga: { besarAmbil: 7000, besarAntar: 9000, kecilAmbil: 6000, kecilAntar: 7000 },
+  kasir: ['Ilyas', 'Hera'],
+  asrama: ['AS 2', 'AS 6', 'AS HSLC', 'AS NLC', 'AS SKA', 'AS 12', 'AS 30', 'HAMID', 'AS 3'],
+  kategoriPg: ['Pengisian Toren', 'Tutup Galon', 'Transportasi/Bensin', 'Service Alat', 'Lain-lain']
+};
+const SEED_TS = '2000-01-01T00:00:00.000Z';   // data bawaan selalu kalah dari data online
+function seedIfEmpty() {
+  const cur = DB.get('settings');
+  if (!cur) { DB.put('settings', JSON.parse(JSON.stringify(DEF_SETTINGS)), null, SEED_TS); return; }
+  let ch = false;
+  for (const k in DEF_SETTINGS) if (cur[k] === undefined) { cur[k] = JSON.parse(JSON.stringify(DEF_SETTINGS[k])); ch = true; }
+  if (ch) DB.put('settings', cur, null, DB.docs.settings?.updated_at);
+}
+const ST = () => DB.get('settings') || DEF_SETTINGS;
+function getHarga(ukuran, mode) {
+  const h = ST().harga || DEF_SETTINGS.harga;
+  return (ukuran === 'kecil' ? (mode === 'antar' ? h.kecilAntar : h.kecilAmbil) : (mode === 'antar' ? h.besarAntar : h.besarAmbil)) || 0;
+}
+
+/* ---------- akses data ---------- */
+const hhmmOf = t => String(t.time || '00:00').replace('.', ':').padStart(5, '0');
+const sortKey = t => t.date + ' ' + hhmmOf(t);
+const allTrx = () => DB.list('trx').sort((a, b) => sortKey(b).localeCompare(sortKey(a)) || String(b.at || '').localeCompare(String(a.at || '')));      // termasuk batal, terbaru dulu
+const okTrx = () => allTrx().filter(t => !t.batal);
+const trxOn = d => okTrx().filter(t => t.date === d);
+const trxMonth = ym => okTrx().filter(t => t.date.startsWith(ym));
+const allExp = () => DB.list('exp').sort((a, b) => (b.date + hhmmOf(b)).localeCompare(a.date + hhmmOf(a)) || String(b.at || '').localeCompare(String(a.at || '')));
+const okExp = () => allExp().filter(e => !e.batal);
+const expOn = d => okExp().filter(e => e.date === d);
+const expMonth = ym => okExp().filter(e => e.date.startsWith(ym));
+const custAll = () => DB.list('cust').filter(c => !c.hapus);
+const jual = l => l.filter(t => !t.isAsrama);
+const asr = l => l.filter(t => t.isAsrama);
+
+function addLog(doc, aksi, ket) { (doc.log = doc.log || []).push({ at: realISO(), oleh: S.kasir || 'Owner', aksi, ket: ket || '' }); }
+
+/* ============================================================
+   DIALOG
+   ============================================================ */
+function openSheet(html, wide) {
+  closeSheet();
+  const sc = document.createElement('div'); sc.className = 'scrim'; sc.id = 'scrim';
+  sc.innerHTML = `<div class="sheet ${wide ? 'wide' : ''}" role="dialog">${html}</div>`;
+  sc.addEventListener('mousedown', e => { if (e.target === sc) closeSheet(); });
+  document.body.appendChild(sc);
+  return sc.firstElementChild;
+}
+function closeSheet() { $('#scrim')?.remove(); }
+
+// ask({title, body, input:{label,ph,type,inputmode,required,value}, ok, cancel, danger, noCancel}) -> true/false | string/null
+function ask(o) {
+  return new Promise(res => {
+    const sc = document.createElement('div'); sc.className = 'scrim'; sc.style.zIndex = 50;
+    const inp = o.input;
+    sc.innerHTML = `<div class="sheet" role="alertdialog">
+      <h3>${esc(o.title || 'Konfirmasi')}</h3>
+      ${o.body ? `<div style="white-space:pre-line;line-height:1.5;font-size:14px">${esc(o.body)}</div>` : ''}
+      ${inp ? `<label class="f">${esc(inp.label || '')}<input class="in" id="askin" type="${inp.type || 'text'}" ${inp.inputmode ? `inputmode="${inp.inputmode}"` : ''} autocomplete="off" placeholder="${esc(inp.ph || '')}" value="${esc(inp.value || '')}"></label>` : ''}
+      <div class="grid2" style="margin-top:4px">
+        ${o.noCancel ? '' : `<button class="btn ghost" id="askno" style="margin-top:0">${esc(o.cancel || 'Batal')}</button>`}
+        <button class="btn ${o.danger ? 'danger' : ''}" id="askok" style="margin-top:0;${o.noCancel ? 'grid-column:1/-1' : ''}">${esc(o.ok || 'Ya, lanjut')}</button>
+      </div></div>`;
+    document.body.appendChild(sc);
+    const done = v => { sc.remove(); res(v); };
+    const input = $('#askin', sc);
+    const submit = () => {
+      if (inp) {
+        const v = input.value.trim();
+        if (inp.required && !v) { toast(typeof inp.required === 'string' ? inp.required : 'Wajib diisi'); input.focus(); return; }
+        done(v);
+      } else done(true);
+    };
+    $('#askok', sc).onclick = submit;
+    const no = $('#askno', sc); if (no) no.onclick = () => done(inp ? null : false);
+    sc.addEventListener('mousedown', e => { if (e.target === sc && !o.noCancel) done(inp ? null : false); });
+    if (input) { input.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); }); setTimeout(() => input.focus(), 40); }
+  });
+}
+async function needPin(why) {
+  const v = await ask({ title: 'Masukkan PIN', body: why || 'Aksi ini butuh PIN supervisor.', input: { label: 'PIN', type: 'password', inputmode: 'numeric', required: 'Isi PIN dulu' }, ok: 'Konfirmasi' });
+  if (v == null) return false;
+  if (v === String(ST().pin)) return true;
+  toast('PIN salah'); return false;
+}
+async function sha256(s) {
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+
+/* ---------- berbagi / simpan file ---------- */
+async function shareBlob(blob, name, title) {
+  const file = new File([blob], name, { type: blob.type });
+  try { if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: title || name }); return 'shared'; } }
+  catch (e) { if (e && e.name === 'AbortError') return 'cancel'; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000); toast('File diunduh: ' + name);
+  return 'download';
+}
+const canvasBlob = (cv, type = 'image/png', q) => new Promise(r => cv.toBlob(r, type, q));
+async function pdfFromCanvas(cv, { wMM, quality = .92, px = false } = {}) {
+  await loadScript(JSPDF_SRC);
+  const { jsPDF } = window.jspdf;
+  const W = cv.width, H = cv.height;
+  const url = cv.toDataURL('image/jpeg', quality);
+  let doc;
+  if (wMM) { const hMM = wMM * H / W; doc = new jsPDF({ orientation: hMM > wMM ? 'portrait' : 'landscape', unit: 'mm', format: [wMM, hMM], compress: true }); doc.addImage(url, 'JPEG', 0, 0, wMM, hMM); }
+  else { doc = new jsPDF({ orientation: H > W ? 'portrait' : 'landscape', unit: 'px', format: [W, H], hotfixes: ['px_scaling'], compress: true }); doc.addImage(url, 'JPEG', 0, 0, W, H); }
+  return doc.output('blob');
+}
+
+/* ---------- logo ---------- */
+let logoImg = null;
+function loadImg(src) { return new Promise(r => { if (!src) return r(null); const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src; }); }
+async function loadLogo() { if (!logoImg) logoImg = await loadImg(LOGO); return logoImg; }
+
+/* ---------- reset / sinkron reset ---------- */
+const TX_COLS = ['trx', 'exp', 'cust'];
+function wipeLocal(cols, before) {
+  for (const [id, d] of Object.entries(DB.docs)) {
+    if (id === 'reset') continue;
+    if ((!cols || cols.includes(d.col)) && new Date(d.updated_at) <= new Date(before)) { delete DB.docs[id]; delete DB.pending[id]; }
+  }
+  DB.saveCache();
+}
+function applyRemoteReset() {   // perangkat lain ikut bersih setelah reset
+  const r = DB.get('reset'); if (!r || r.at <= lsGet('resetSeen', '')) return;
+  wipeLocal(r.scope === 'total' ? null : TX_COLS, r.at); lsSet('resetSeen', r.at);
+  if (r.scope === 'total') { S.kasir = ''; lsSet('kasir', ''); }
+  if (!DB.get('settings')) seedIfEmpty();
+}
+/* ============================================================
+   STRUK — digambar langsung di canvas (tanpa html2canvas)
+   • thermal: 384px = kertas 58mm, hitam-putih, ukuran huruf besar
+   • warna  : untuk dikirim ke WhatsApp / disimpan sebagai gambar
+   Cetak: bikin PDF lebar 48mm lalu Bagikan → pilih Thermer
+   ============================================================ */
+function wrapText(x, text, maxW) {
+  const words = String(text ?? '').split(/\s+/).filter(Boolean), lines = []; let cur = '';
+  for (const w of words) {
+    const t = cur ? cur + ' ' + w : w;
+    if (x.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t;
+    while (x.measureText(cur).width > maxW && cur.length > 1) {   // kata sangat panjang: potong
+      let n = cur.length - 1; while (n > 1 && x.measureText(cur.slice(0, n)).width > maxW) n--;
+      lines.push(cur.slice(0, n)); cur = cur.slice(n);
+    }
+  }
+  if (cur) lines.push(cur);
+  return lines.length ? lines : [''];
+}
+function dropShape(x, cx, cy, s) {
+  x.beginPath(); x.moveTo(cx, cy - s);
+  x.bezierCurveTo(cx + .95 * s, cy - .05 * s, cx + .75 * s, cy + .95 * s, cx, cy + .95 * s);
+  x.bezierCurveTo(cx - .75 * s, cy + .95 * s, cx - .95 * s, cy - .05 * s, cx, cy - s); x.closePath();
+}
+function strukRows(t) {
+  const hs = getHarga(t.ukuran, t.antar ? 'antar' : 'ambil'), uk = t.ukuran === 'kecil' ? 'Kecil' : 'Besar';
+  const r = [['Tanggal', t.date + ' ' + hhmmOf(t)], [t.isAsrama ? 'Asrama' : 'Pelanggan', t.customerName || '-']];
+  r.push([`Galon ${uk}`, t.isAsrama ? String(t.jumlah) : `${t.jumlah} x ${rp(hs)}`]);
+  if (!t.isAsrama) {
+    r.push(['Ambil', t.antar ? 'Diantar' : 'Ambil sendiri']);
+    if (t.antar && t.address) r.push(['Alamat', t.address]);
+    r.push(['Bayar', bayarLabel(t.payment)]);
+  }
+  if (t.catatan) r.push(['Catatan', t.catatan]);
+  return r;
+}
+async function drawStruk(t, { color = false } = {}) {
+  try { await document.fonts.ready; } catch (e) { }
+  const logo = color ? await loadLogo() : null;
+  const s = ST(), k = color ? 2 : 1, W = 384, PAD = 14;
+  const cv = document.createElement('canvas'); cv.width = W * k; cv.height = 2600 * k;
+  const x = cv.getContext('2d'); x.scale(k, k);
+  x.fillStyle = '#fff'; x.fillRect(0, 0, W, 2600);
+  const ink = '#000', soft = color ? '#55627d' : '#000', accent = color ? '#12307f' : '#000';
+  const FF = '"Inter","Segoe UI",Arial,sans-serif';
+  const F = (w, sz) => x.font = `${w} ${sz}px ${FF}`;
+  const txt = (tx, X, Y, { a = 'left', c = ink } = {}) => { x.fillStyle = c; x.textAlign = a; x.fillText(tx, X, Y); };
+  const dash = () => { x.save(); x.strokeStyle = color ? '#9aa8c8' : '#000'; x.lineWidth = 2; x.setLineDash([6, 5]); x.beginPath(); x.moveTo(PAD, y); x.lineTo(W - PAD, y); x.stroke(); x.restore(); y += 16; };
+  let y = 14;
+  // header
+  if (color && logo) { const lw = 220, lh = lw * logo.height / logo.width; x.drawImage(logo, (W - lw) / 2, y, lw, lh); y += lh + 18; }
+  else { x.fillStyle = '#000'; dropShape(x, W / 2, y + 26, 24); x.fill(); y += 62; F(800, 40); txt((s.toko || 'AQUANERS').toUpperCase(), W / 2, y + 30, { a: 'center', c: accent }); y += 46; }
+  F(700, 22); txt(s.tagline || 'Steril Refill Water', W / 2, y + 16, { a: 'center', c: soft }); y += 32;
+  F(500, 18); x.textBaseline = 'alphabetic';
+  if (!t.isAsrama) for (const l of wrapText(x, s.alamat || '', W - 2 * PAD)) { txt(l, W / 2, y + 14, { a: 'center', c: soft }); y += 24; }
+  else { txt('Konsumsi Internal · Asrama', W / 2, y + 14, { a: 'center', c: soft }); y += 24; }
+  y += 6; dash();
+  // baris data
+  for (const [lab, val] of strukRows(t)) {
+    F(500, 24); const lw = Math.min(150, x.measureText(lab).width + 12);
+    F(700, 26); const lines = wrapText(x, val, W - 2 * PAD - lw);
+    F(500, 24); txt(lab, PAD, y + 24, { c: soft });
+    F(700, 26); lines.forEach((l, i) => { txt(l, W - PAD, y + 24 + i * 32, { a: 'right' }); });
+    y += Math.max(36, lines.length * 32 + 6);
+  }
+  y += 4; dash();
+  if (t.isAsrama) { F(800, 28); txt('INTERNAL · ASRAMA', W / 2, y + 30, { a: 'center', c: accent }); y += 50; }
+  else { F(800, 30); txt('TOTAL', PAD, y + 40, { c: accent }); F(800, 42); txt(rp(t.total), W - PAD, y + 42, { a: 'right', c: accent }); y += 66; }
+  dash();
+  F(500, 22); txt('Dicatat oleh ' + (t.kasir || '-'), W / 2, y + 22, { a: 'center', c: soft }); y += 34;
+  F(600, 22); for (const l of wrapText(x, s.footer || '', W - 2 * PAD)) { txt(l, W / 2, y + 22, { a: 'center', c: soft }); y += 30; }
+  if (s.kontak) { F(500, 18); for (const l of wrapText(x, s.kontak, W - 2 * PAD)) { txt(l, W / 2, y + 18, { a: 'center', c: soft }); y += 26; } }
+  y += color ? 22 : 54;     // jarak sobek kertas thermal
+  const out = document.createElement('canvas'); out.width = W * k; out.height = Math.ceil(y * k);
+  out.getContext('2d').drawImage(cv, 0, 0);
+  return out;
+}
+const strukName = (t, ext) => `struk-aquaners-${t.date}-${hhmmOf(t).replace(':', '')}.${ext}`;
+
+async function printStruk(t) {
+  toast('Menyiapkan struk…', 1800);
+  const cv = await drawStruk(t, { color: false });
+  try {
+    const pdf = await pdfFromCanvas(cv, { wMM: 48, quality: .95 });
+    const r = await shareBlob(pdf, strukName(t, 'pdf'), 'Struk Aquaners');
+    if (r === 'shared') toast('Pilih Thermer di menu, lalu cetak');
+  } catch (e) {   // tanpa internet: kirim gambar
+    await shareBlob(await canvasBlob(cv), strukName(t, 'png'), 'Struk Aquaners');
+  }
+}
+async function saveStrukImage(t) {
+  const cv = await drawStruk(t, { color: true });
+  const r = await shareBlob(await canvasBlob(cv), strukName(t, 'png'), 'Struk Aquaners');
+  if (r === 'download') toast('Gambar struk tersimpan di Download');
+}
+async function sendStrukWA(t, phone) {
+  const num = normWA(phone); if (!num) { toast('Isi nomor WhatsApp dulu'); return false; }
+  const waWin = window.open('', '_blank');                      // dibuka dulu saat klik agar tidak diblokir
+  const cv = await drawStruk(t, { color: true });
+  const blob = await canvasBlob(cv);
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = strukName(t, 'png'); document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  const url = 'https://wa.me/' + num;
+  if (waWin && !waWin.closed) waWin.location.href = url; else window.open(url, '_blank');
+  toast('Gambar struk tersimpan di Download. Chat WA sudah dibuka: lampirkan gambarnya lewat ikon klip.', 6000);
+  return true;
+}
+
+/* ---------- pratinjau & tombol aksi struk ---------- */
+function strukHtml(t) {
+  const s = ST(), hs = getHarga(t.ukuran, t.antar ? 'antar' : 'ambil');
+  const rows = strukRows(t).map(([a, b]) => `<div class="r"><span>${esc(a)}</span><span>${esc(b)}</span></div>`).join('');
+  return `<div class="receipt"><div class="logo"><img src="${LOGO}" alt="Aquaners"></div>
+    <div class="sub">${t.isAsrama ? 'Konsumsi Internal · Asrama' : esc(s.alamat || '')}</div>
+    ${rows}
+    ${t.isAsrama ? '<div class="tot"><span>Status</span><span>INTERNAL · ASRAMA</span></div>' : `<div class="tot"><span>Total</span><span>${rp(t.total)}</span></div>`}
+    <div class="ft">Dicatat oleh ${esc(t.kasir || '-')}</div></div>`;
+}
+function strukActions(t, box, { afterAction } = {}) {
+  const wa = !t.isAsrama;
+  box.innerHTML = `<div class="sec">
+    <button class="btn" data-a="print">🖨 Cetak Struk (Thermer)</button>
+    <div class="grid2" style="margin-top:0">
+      ${wa ? '<button class="btn wa" data-a="wa" style="margin-top:0">Kirim ke WA</button>' : ''}
+      <button class="btn ghost" data-a="img" style="margin-top:0;${wa ? '' : 'grid-column:1/-1'}">Simpan Gambar</button>
+    </div></div>`;
+  $('[data-a=print]', box).onclick = async e => { e.target.disabled = true; try { await printStruk(t); } finally { e.target.disabled = false; } afterAction && afterAction(); };
+  $('[data-a=img]', box).onclick = async e => { e.target.disabled = true; try { await saveStrukImage(t); } finally { e.target.disabled = false; } afterAction && afterAction(); };
+  if (wa) $('[data-a=wa]', box).onclick = () => {
+    const cust = DB.get(t.customerId); const phone0 = cust && cust.phone ? cust.phone : '';
+    box.innerHTML = `<div class="sec">
+      <label class="f">No. WhatsApp tujuan<input class="in" id="wanum" inputmode="numeric" autocomplete="off" placeholder="08123456789" value="${esc(phone0)}"></label>
+      <button class="btn wa" id="wago">Kirim Struk (Foto) ke WA</button>
+      <button class="btn ghost" id="waback" style="margin-top:0">← Kembali</button></div>`;
+    $('#waback', box).onclick = () => strukActions(t, box, { afterAction });
+    $('#wago', box).onclick = async e => {
+      const phone = $('#wanum', box).value.trim(); e.target.disabled = true;
+      const ok = await sendStrukWA(t, phone); e.target.disabled = false;
+      if (ok) {
+        if (cust && cust.phone !== phone) { cust.phone = phone; DB.put('cust', cust); }
+        strukActions(t, box, { afterAction }); afterAction && afterAction();
+      }
+    };
+  };
+}
+function strukSheet(t) {
+  const sh = openSheet(`<div class="hd"><h3>Struk</h3><button class="x" id="cx">×</button></div>${strukHtml(t)}<div id="sa"></div>`);
+  $('#cx', sh).onclick = closeSheet; strukActions(t, $('#sa', sh));
+}
+/* ============================================================
+   STATE, SHELL, NAVIGASI
+   ============================================================ */
+const S = {
+  tab: 'kasir', owner: ssGet('owner') === '1', kasir: lsGet('kasir', ''),
+  lapTab: 'harian', lapDate: null, lapMonth: null, ownerTab: 'atur',
+  form: { jenis: 'pelanggan', ambil: null, bayar: null }, rcpt: null, expBukti: '', riwayatFilter: ''
+};
+const TABS = [['kasir', 'Kasir'], ['pelanggan', 'Pelanggan'], ['pengeluaran', 'Pengeluaran'], ['laporan', 'Laporan']];
+const GEAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
+
+function shell() {
+  const s = ST();
+  $('#root').innerHTML = `<div class="app">
+    <header class="top">
+      <div class="logo"><img src="${LOGO}" alt="Aquaners"></div>
+      <div class="brand"><b>${esc(s.toko)}</b><small id="kasirlbl" style="cursor:pointer" title="Ganti kasir">Kasir: ${esc(S.kasir || '—')} ✎</small></div>
+      <div class="clock" id="clock"></div>
+      <span class="pill" id="status">…</span>
+      <button class="gear ${S.tab === 'owner' ? 'sel' : ''}" id="gear" aria-label="Area owner" title="Area owner">${GEAR}</button>
+    </header>
+    <div class="tabs" id="tabs">${TABS.map(([k, l]) => `<button data-t="${k}" class="${S.tab === k ? 'sel' : ''}">${l}</button>`).join('')}</div>
+    <main id="main"></main></div>`;
+  $$('#tabs [data-t]').forEach(b => b.onclick = () => { S.tab = b.dataset.t; shell(); render(); });
+  $('#gear').onclick = () => { S.tab = 'owner'; shell(); render(); };
+  $('#kasirlbl').onclick = () => pickKasir();
+  setStatus(); tickClock();
+}
+function tickClock() {
+  const el = $('#clock'); if (!el) return; const d = getNow();
+  el.innerHTML = `${HARI[d.getDay()]}, ${d.getDate()} ${BULAN[d.getMonth()].slice(0, 3)} ${d.getFullYear()}<br>${hhmm(d)}${TIME_OVERRIDE ? ' · WAKTU MANUAL' : ''}`;
+  el.className = 'clock' + (TIME_OVERRIDE ? ' manual' : '');
+}
+function render() {
+  const fn = { kasir: vKasir, pelanggan: vPelanggan, pengeluaran: vPengeluaran, laporan: vLaporan, owner: vOwner }[S.tab];
+  fn();
+}
+// refresh ringan (tanpa menghapus isian form)
+function softRefresh() {
+  if ($('#scrim') || document.activeElement?.matches('input,textarea,select')) return;
+  if (S.tab === 'kasir') renderToday(); else if (S.tab === 'pelanggan') renderCustList(); else if (S.tab === 'pengeluaran') renderExpToday(); else if (S.tab === 'laporan') render();
+}
+
+/* ---------- pilih kasir ---------- */
+function pickKasir() {
+  return new Promise(res => {
+    const names = ST().kasir || [];
+    const sh = openSheet(`<div class="hd"><h3>Kasir yang bertugas</h3><button class="x" id="cx">×</button></div>
+      <div class="hint">Pilih atau ketik nama, supaya setiap transaksi tercatat siapa yang input.</div>
+      <div class="seg pill-s">${names.map(n => `<button data-n="${esc(n)}" class="${n === S.kasir ? 'sel' : ''}">${esc(n)}</button>`).join('')}</div>
+      <label class="f">Atau nama lain<input class="in" id="kn" placeholder="Ketik nama kasir" autocomplete="off"></label>
+      <button class="btn" id="ks">Simpan &amp; mulai kasir</button>`);
+    const set = n => { S.kasir = n; lsSet('kasir', n); closeSheet(); shell(); render(); res(n); };
+    $('#cx', sh).onclick = () => { closeSheet(); res(null); };
+    $$('[data-n]', sh).forEach(b => b.onclick = () => set(b.dataset.n));
+    $('#ks', sh).onclick = () => { const n = $('#kn', sh).value.trim(); if (!n) return toast('Pilih salah satu nama atau ketik dulu'); set(n); };
+  });
+}
+
+/* ============================================================
+   TAB KASIR
+   ============================================================ */
+function vKasir() {
+  const s = ST(), F = S.form;
+  $('#main').innerHTML = `<div class="grid-2">
+    <div class="card" id="formcard">
+      <h2><span class="eb">BARU</span> Catat Transaksi</h2>
+      <label class="f">Jenis transaksi</label>
+      <div class="seg" id="g-jenis"><button data-v="pelanggan">Pelanggan</button><button data-v="asrama">Asrama</button></div>
+      <label class="f" id="lbl-nama">Pelanggan</label>
+      <div style="position:relative" id="nama-wrap"><input class="in" id="f-nama" placeholder="Nama pelanggan (atau ketik baru)" autocomplete="off"><div class="suggest" id="sug"></div></div>
+      <select class="in" id="f-asr" style="display:none"><option value="">Pilih asrama</option>${(s.asrama || []).map(a => `<option>${esc(a)}</option>`).join('')}</select>
+      <div class="grid2">
+        <div><label class="f">Jumlah galon</label><div class="stepper"><button type="button" id="jm">−</button><input class="in" id="f-jml" type="number" inputmode="numeric" min="1" value="1"><button type="button" id="jp">+</button></div></div>
+        <div><label class="f">Tipe galon</label><select class="in" id="f-uk"><option value="besar">Besar (galon biasa)</option><option value="kecil">Kecil</option></select></div>
+      </div>
+      <div id="pel-only">
+        <label class="f">Pengambilan</label>
+        <div class="seg" id="g-ambil"><button data-v="ambil">Ambil sendiri</button><button data-v="antar">Diantar</button></div>
+        <div class="hint" id="hint-harga" style="margin-top:6px"></div>
+        <div id="antar-wrap" style="display:none"><label class="f">Alamat antar</label><input class="in" id="f-alamat" placeholder="misal: Jl. Sederhana No.12, dekat warung Bu Yayah"></div>
+        <label class="f">Metode pembayaran</label>
+        <div class="seg" id="g-bayar"><button data-v="tunai">Tunai</button><button data-v="qris">QRIS</button><button data-v="transfer">Transfer</button></div>
+      </div>
+      <label class="f">Catatan <span style="text-transform:none;font-weight:400">(opsional)</span></label>
+      <input class="in" id="f-cat" placeholder="misal: jam antar, permintaan khusus">
+      <div class="total-line"><span id="tl">Total</span><b id="tv">Rp 0</b></div>
+      <button class="btn" id="simpan">Simpan transaksi</button>
+    </div>
+    <div class="sec">
+      <div id="rcpt"></div>
+      <div class="card"><h2 id="th">Transaksi hari ini</h2><div id="today" class="list"></div></div>
+    </div></div>`;
+  paintSeg('#g-jenis', F.jenis); paintSeg('#g-ambil', F.ambil); paintSeg('#g-bayar', F.bayar);
+  syncJenis(); calc();
+  $$('#g-jenis button').forEach(b => b.onclick = () => { F.jenis = b.dataset.v; paintSeg('#g-jenis', F.jenis); syncJenis(); calc(); });
+  $$('#g-ambil button').forEach(b => b.onclick = () => { F.ambil = F.ambil === b.dataset.v ? null : b.dataset.v; paintSeg('#g-ambil', F.ambil); $('#antar-wrap').style.display = F.ambil === 'antar' ? 'block' : 'none'; calc(); });
+  $$('#g-bayar button').forEach(b => b.onclick = () => { F.bayar = F.bayar === b.dataset.v ? null : b.dataset.v; paintSeg('#g-bayar', F.bayar); });
+  $('#f-jml').oninput = calc; $('#f-uk').onchange = calc;
+  $('#jm').onclick = () => { $('#f-jml').value = Math.max(1, (parseInt($('#f-jml').value) || 1) - 1); calc(); };
+  $('#jp').onclick = () => { $('#f-jml').value = (parseInt($('#f-jml').value) || 0) + 1; calc(); };
+  setupSuggest();
+  $('#simpan').onclick = saveTrx;
+  renderToday(); renderRcpt();
+}
+function paintSeg(sel, v) { $$(sel + ' button').forEach(b => b.classList.toggle('sel', b.dataset.v === v)); }
+function syncJenis() {
+  const as = S.form.jenis === 'asrama';
+  $('#pel-only').style.display = as ? 'none' : 'block';
+  $('#nama-wrap').style.display = as ? 'none' : 'block';
+  $('#f-asr').style.display = as ? 'block' : 'none';
+  $('#lbl-nama').textContent = as ? 'Asrama' : 'Pelanggan';
+  $('#antar-wrap').style.display = (!as && S.form.ambil === 'antar') ? 'block' : 'none';
+}
+function calc() {
+  const jml = Math.max(1, parseInt($('#f-jml').value) || 1), uk = $('#f-uk').value;
+  $('#hint-harga').textContent = `Ambil sendiri ${rp(getHarga(uk, 'ambil'))} · Diantar ${rp(getHarga(uk, 'antar'))}`;
+  if (S.form.jenis === 'asrama') { $('#tl').textContent = 'Status'; $('#tv').textContent = 'Internal (bukan omzet)'; $('#tv').style.fontSize = '16px'; return 0; }
+  const total = jml * getHarga(uk, S.form.ambil || 'ambil');
+  $('#tl').textContent = 'Total'; $('#tv').style.fontSize = ''; $('#tv').textContent = rp(total); return total;
+}
+function setupSuggest() {
+  const inp = $('#f-nama'), box = $('#sug');
+  const show = () => {
+    const q = inp.value.trim().toLowerCase();
+    const all = custAll().map(c => c.name).sort((a, b) => a.localeCompare(b));
+    const m = (q ? all.filter(n => n.toLowerCase().includes(q)) : all).slice(0, 8);
+    if (!m.length) { box.style.display = 'none'; return; }
+    box.innerHTML = m.map((n, i) => `<div data-i="${i}">${esc(n)}</div>`).join(''); box.style.display = 'block';
+    $$('div', box).forEach(el => el.onmousedown = e => { e.preventDefault(); inp.value = m[+el.dataset.i]; box.style.display = 'none'; fillAddr(); });
+  };
+  const fillAddr = () => {
+    const c = custAll().find(c => c.name.toLowerCase() === inp.value.trim().toLowerCase());
+    if (c && c.address && !$('#f-alamat').value) $('#f-alamat').value = c.address;
+  };
+  inp.oninput = show; inp.onfocus = show; inp.onblur = () => setTimeout(() => { box.style.display = 'none'; }, 150); inp.onchange = fillAddr;
+}
+function findOrCreateCust(name, address) {
+  name = name.trim(); if (!name) return null;
+  let c = DB.list('cust').find(c => c.name.toLowerCase() === name.toLowerCase());
+  if (!c) c = { id: uid('c'), name, phone: '', address: address || '' };
+  else { if (address) c.address = address; delete c.hapus; }
+  DB.put('cust', c); return c;
+}
+function saveTrx() {
+  const F = S.form, as = F.jenis === 'asrama';
+  const nama = as ? $('#f-asr').value : $('#f-nama').value.trim();
+  const jumlah = Math.max(1, parseInt($('#f-jml').value) || 1), ukuran = $('#f-uk').value, catatan = $('#f-cat').value.trim();
+  if (!nama) return toast(as ? 'Pilih asrama dulu ya dari daftar.' : 'Isi nama pelanggan dulu ya (boleh "Umum" kalau pembeli lewat).', 3500);
+  if (!as) {
+    if (!F.ambil) return toast('Pilih dulu "Ambil sendiri" atau "Diantar" ya.', 3500);
+    if (!F.bayar) return toast('Pilih dulu metode pembayarannya (Tunai/QRIS/Transfer).', 3500);
+  }
+  const now = getNow(), kasir = S.kasir || 'Tidak diketahui';
+  let t;
+  if (as) t = { id: uid('t'), date: dstr(now), time: hhmm(now), at: nowISO(), customerId: null, customerName: nama, jumlah, ukuran, catatan, antar: false, address: '', payment: '', isAsrama: true, kasir, total: 0, log: [] };
+  else {
+    const addr = $('#f-alamat').value.trim(), cust = findOrCreateCust(nama, addr), antar = F.ambil === 'antar';
+    t = { id: uid('t'), date: dstr(now), time: hhmm(now), at: nowISO(), customerId: cust.id, customerName: cust.name, jumlah, ukuran, catatan, antar, address: antar ? addr : (cust.address || ''), payment: F.bayar, isAsrama: false, kasir, total: jumlah * getHarga(ukuran, antar ? 'antar' : 'ambil'), log: [] };
+  }
+  DB.put('trx', t, t.date);
+  S.rcpt = t.id;
+  $('#f-nama').value = ''; $('#f-asr').value = ''; $('#f-jml').value = 1; $('#f-cat').value = ''; $('#f-alamat').value = '';
+  F.ambil = null; F.bayar = null; paintSeg('#g-ambil', null); paintSeg('#g-bayar', null); syncJenis(); calc();
+  renderRcpt(); renderToday(); toast('Transaksi tersimpan');
+}
+function renderRcpt() {
+  const box = $('#rcpt'); if (!box) return;
+  const t = S.rcpt && DB.get(S.rcpt);
+  if (!t || t.batal) { box.innerHTML = '<div class="empty-receipt">Nota akan muncul di sini<br>setelah transaksi disimpan.</div>'; return; }
+  box.innerHTML = `<div class="card">${strukHtml(t)}<div id="ra" style="margin-top:12px"></div>
+    <button class="btn ghost" id="done">Transaksi Selesai</button></div>`;
+  strukActions(t, $('#ra', box));
+  $('#done').onclick = async () => {
+    if (!await ask({ title: 'Transaksi selesai?', body: 'Nota ditutup dan kamu diminta pilih kasir lagi untuk transaksi berikutnya.' })) return;
+    S.rcpt = null; S.kasir = ''; lsSet('kasir', ''); shell(); render(); pickKasir();
+  };
+}
+function renderToday() {
+  const wrap = $('#today'); if (!wrap) return;
+  const list = trxOn(today());
+  $('#th').textContent = `Transaksi hari ini (${list.length})`;
+  if (!list.length) { wrap.innerHTML = '<div class="empty">Belum ada transaksi hari ini.</div>'; return; }
+  wrap.innerHTML = list.map(t => `<div class="item"><div class="main"><div class="t">${esc(t.customerName)} ${t.antar ? '<span class="tag antar">ANTAR</span>' : ''} ${t.isAsrama ? '<span class="tag asrama">ASRAMA</span>' : ''}</div>
+    <div class="s">${t.jumlah} galon · ${hhmmOf(t)}${t.catatan ? ' · ' + esc(t.catatan) : ''} · oleh ${esc(t.kasir || '-')}</div></div>
+    <div class="v">${t.isAsrama ? 'Internal' : rp(t.total)}</div>
+    <button class="mini" data-s="${t.id}">Struk</button><button class="mini bad" data-d="${t.id}">Hapus</button></div>`).join('');
+  $$('[data-s]', wrap).forEach(b => b.onclick = () => strukSheet(DB.get(b.dataset.s)));
+  $$('[data-d]', wrap).forEach(b => b.onclick = () => batalTrx(b.dataset.d));
+}
+async function batalTrx(id) {
+  const t = DB.get(id); if (!t) return;
+  if (!await needPin('Menghapus transaksi butuh PIN supervisor.')) return;
+  const why = await ask({ title: 'Hapus transaksi?', body: `${t.customerName} · ${t.jumlah} galon · ${t.isAsrama ? 'Internal' : rp(t.total)}\nTransaksi ditandai BATAL dan tidak dihitung di laporan. Owner bisa melihat alasannya.`, input: { label: 'Alasan', ph: 'mis. salah input', required: 'Alasan wajib diisi' }, ok: 'Hapus transaksi', danger: true });
+  if (!why) return;
+  t.batal = true; t.batalAlasan = why; t.batalAt = nowISO(); t.batalOleh = S.kasir || 'Owner'; addLog(t, 'Batal', why);
+  DB.put('trx', t, t.date); if (S.rcpt === id) S.rcpt = null;
+  toast('Transaksi dihapus (ditandai batal)'); render();
+}
+async function editTrx(id) {
+  const t = DB.get(id); if (!t || t.batal) return;
+  if (!await needPin('Mengubah transaksi butuh PIN supervisor.')) return;
+  let ambil = t.antar ? 'antar' : 'ambil', bayar = t.payment || 'tunai';
+  const sh = openSheet(`<div class="hd"><h3>Edit Transaksi</h3><button class="x" id="cx">×</button></div>
+    <label class="f">${t.isAsrama ? 'Asrama' : 'Pelanggan'}<input class="in" id="e-nama" value="${esc(t.customerName)}"></label>
+    <div class="grid2"><label class="f">Jumlah galon<input class="in" id="e-jml" type="number" min="1" value="${t.jumlah}"></label>
+    <label class="f">Tipe galon<select class="in" id="e-uk"><option value="besar">Besar</option><option value="kecil">Kecil</option></select></label></div>
+    ${t.isAsrama ? '' : `<label class="f">Pengambilan</label><div class="seg" id="e-ambil"><button data-v="ambil">Ambil sendiri</button><button data-v="antar">Diantar</button></div>
+    <label class="f">Alamat<input class="in" id="e-alamat" value="${esc(t.address || '')}"></label>
+    <label class="f">Metode pembayaran</label><div class="seg" id="e-bayar"><button data-v="tunai">Tunai</button><button data-v="qris">QRIS</button><button data-v="transfer">Transfer</button></div>`}
+    <label class="f">Catatan<input class="in" id="e-cat" value="${esc(t.catatan || '')}"></label>
+    <button class="btn" id="e-ok">Simpan perubahan</button>`);
+  $('#e-uk', sh).value = t.ukuran || 'besar';
+  if (!t.isAsrama) {
+    paintSeg('#e-ambil', ambil); paintSeg('#e-bayar', bayar);
+    $$('#e-ambil button', sh).forEach(b => b.onclick = () => { ambil = b.dataset.v; paintSeg('#e-ambil', ambil); });
+    $$('#e-bayar button', sh).forEach(b => b.onclick = () => { bayar = b.dataset.v; paintSeg('#e-bayar', bayar); });
+  }
+  $('#cx', sh).onclick = closeSheet;
+  $('#e-ok', sh).onclick = () => {
+    const nama = $('#e-nama', sh).value.trim(); if (!nama) return toast('Nama tidak boleh kosong');
+    const before = `${t.customerName}/${t.jumlah}/${t.ukuran}/${t.total}`;
+    t.customerName = nama; t.jumlah = Math.max(1, parseInt($('#e-jml', sh).value) || 1); t.ukuran = $('#e-uk', sh).value; t.catatan = $('#e-cat', sh).value.trim();
+    if (!t.isAsrama) {
+      t.antar = ambil === 'antar'; const al = $('#e-alamat', sh).value.trim(); t.address = t.antar ? al : (t.address || ''); t.payment = bayar;
+      t.total = t.jumlah * getHarga(t.ukuran, t.antar ? 'antar' : 'ambil');
+      const c = findOrCreateCust(nama, t.address); t.customerId = c.id;
+    }
+    addLog(t, 'Ubah', `${before} → ${t.customerName}/${t.jumlah}/${t.ukuran}/${t.total}`);
+    DB.put('trx', t, t.date); closeSheet(); toast('Transaksi diperbarui'); render();
+  };
+}
+
+/* ============================================================
+   TAB PELANGGAN
+   ============================================================ */
+function custStats(id) {
+  const l = okTrx().filter(t => t.customerId === id);
+  return { count: l.length, galon: sum(l, t => t.jumlah), total: sum(l, t => t.total), list: l };
+}
+function vPelanggan() {
+  $('#main').innerHTML = `<div class="card"><h2><span class="eb">LANGGANAN</span> Daftar Pelanggan</h2>
+    <div class="addrow"><input class="in" id="cs" placeholder="Cari nama pelanggan…"><button class="btn" id="cadd">+ Tambah</button></div>
+    <div class="hint" style="margin-top:8px">Angka galon &amp; belanja di daftar ini dihitung dari ${CACHE_DAYS} hari terakhir. Buka detail pelanggan untuk riwayat lengkap.</div>
+    <div id="cl" class="list" style="margin-top:8px"></div></div>`;
+  $('#cs').oninput = renderCustList; $('#cadd').onclick = () => custForm(null);
+  renderCustList();
+}
+function renderCustList() {
+  const wrap = $('#cl'); if (!wrap) return;
+  const q = ($('#cs')?.value || '').trim().toLowerCase();
+  const l = custAll().filter(c => c.name.toLowerCase().includes(q)).map(c => ({ ...c, st: custStats(c.id) })).sort((a, b) => b.st.galon - a.st.galon || a.name.localeCompare(b.name));
+  if (!l.length) { wrap.innerHTML = '<div class="empty">Belum ada pelanggan. Pelanggan otomatis tersimpan saat kamu isi nama di tab Kasir.</div>'; return; }
+  wrap.innerHTML = l.map(c => `<button class="item" data-c="${c.id}"><div class="main"><div class="t">${esc(c.name)}</div><div class="s">${c.phone ? esc(c.phone) : 'Belum ada nomor WhatsApp'}${c.address ? ' · 📍 ' + esc(c.address) : ''}</div></div>
+    <div class="v">${c.st.galon} galon<div class="s">${rp(c.st.total)}</div></div></button>`).join('');
+  $$('[data-c]', wrap).forEach(b => b.onclick = () => custDetail(b.dataset.c));
+}
+async function custDetail(id) {
+  const c = DB.get(id); if (!c) return;
+  const sh = openSheet(`<div class="hd"><h3>${esc(c.name)}</h3><button class="x" id="cx">×</button></div>
+    <div class="hint">${c.phone ? esc(c.phone) : 'Belum ada nomor WhatsApp'}${c.address ? '<br>📍 ' + esc(c.address) : ''}</div>
+    <div class="grid2"><div class="stat"><span>Total galon</span><b id="cg">…</b></div><div class="stat"><span>Total belanja</span><b id="ct">…</b></div></div>
+    <div class="grid2"><button class="btn ghost" id="ced" style="margin-top:0">Edit</button><button class="btn danger" id="cdel" style="margin-top:0">Hapus</button></div>
+    <h2 style="margin:6px 0 0">Riwayat transaksi</h2><div id="ch" class="list"><div class="empty">Memuat…</div></div>`);
+  $('#cx', sh).onclick = closeSheet;
+  $('#ced', sh).onclick = () => { closeSheet(); custForm(c); };
+  $('#cdel', sh).onclick = async () => {
+    const st = custStats(c.id);
+    if (!await ask({ title: 'Hapus pelanggan?', body: `Hapus "${c.name}"?${st.count ? `\n\nRiwayat ${st.count} transaksinya tetap aman di Laporan; hanya hilang dari daftar Pelanggan.` : ''}`, ok: 'Hapus', danger: true })) return;
+    c.hapus = true; DB.put('cust', c); closeSheet(); renderCustList(); toast('Pelanggan dihapus');
+  };
+  const paint = () => {
+    const st = custStats(id); if (!$('#cg')) return;
+    $('#cg').textContent = st.galon; $('#ct').textContent = rp(st.total);
+    $('#ch').innerHTML = st.list.length ? st.list.slice(0, 40).map(t => `<div class="item"><div class="main"><div class="t">${fmtTglS(t.date)} · ${t.jumlah} galon${t.antar ? ' (antar)' : ''}</div></div><div class="v">${rp(t.total)}</div></div>`).join('') : '<div class="empty">Belum ada transaksi.</div>';
+  };
+  paint();
+  if (DB.online()) {   // riwayat lengkap dari server
+    try { DB.merge(await DB.fetchWhere('col=eq.trx&data->>customerId=eq.' + encodeURIComponent(id))); paint(); } catch (e) { }
+  }
+}
+function custForm(c) {
+  const sh = openSheet(`<div class="hd"><h3>${c ? 'Edit pelanggan' : 'Tambah pelanggan'}</h3><button class="x" id="cx">×</button></div>
+    <label class="f">Nama<input class="in" id="n-nama" value="${esc(c ? c.name : '')}"></label>
+    <label class="f">No. WhatsApp (opsional)<input class="in" id="n-hp" inputmode="numeric" placeholder="08xxxxxxxxxx" value="${esc(c ? c.phone || '' : '')}"></label>
+    <label class="f">Alamat (opsional)<input class="in" id="n-al" value="${esc(c ? c.address || '' : '')}"></label>
+    <button class="btn" id="n-ok">${c ? 'Simpan perubahan' : 'Simpan pelanggan'}</button>`);
+  $('#cx', sh).onclick = closeSheet;
+  $('#n-ok', sh).onclick = () => {
+    const name = $('#n-nama', sh).value.trim(), phone = $('#n-hp', sh).value.trim(), address = $('#n-al', sh).value.trim();
+    if (!name) return toast('Nama pelanggan wajib diisi');
+    const dup = custAll().find(x => x.id !== (c && c.id) && x.name.toLowerCase() === name.toLowerCase());
+    if (dup) return toast('Nama itu sudah dipakai pelanggan lain');
+    if (c) {
+      c.name = name; c.phone = phone; c.address = address; DB.put('cust', c);
+      DB.list('trx').filter(t => t.customerId === c.id && t.customerName !== name).forEach(t => { t.customerName = name; DB.put('trx', t, t.date); });
+    } else DB.put('cust', { id: uid('c'), name, phone, address });
+    closeSheet(); renderCustList(); toast('Pelanggan disimpan');
+  };
+}
+
+/* ============================================================
+   TAB PENGELUARAN
+   ============================================================ */
+function vPengeluaran() {
+  const s = ST();
+  $('#main').innerHTML = `<div class="grid-2"><div class="card"><h2><span class="eb">BARU</span> Catat Pengeluaran</h2>
+    <label class="f">Jenis pengeluaran<select class="in" id="x-kat">${(s.kategoriPg || []).map(k => `<option>${esc(k)}</option>`).join('')}</select></label>
+    <label class="f">Jumlah biaya (Rp)<input class="in" id="x-jml" type="number" inputmode="numeric" min="0" placeholder="0"></label>
+    <label class="f">Bukti pengeluaran</label><div class="seg" id="g-bukti"><button data-v="Bon">Bon</button><button data-v="Kwitansi">Kwitansi</button><button data-v="Nota">Nota</button></div>
+    <label class="f">Keterangan (opsional)<input class="in" id="x-ket" placeholder="misal: beli di toko Pak Anto"></label>
+    <button class="btn" id="x-save">Simpan pengeluaran</button></div>
+    <div class="sec"><div class="stat hero"><span>Total pengeluaran hari ini</span><b id="x-tot">Rp 0</b></div>
+    <div class="card"><h2 id="x-h">Pengeluaran hari ini</h2><div id="x-list" class="list"></div></div></div></div>`;
+  paintSeg('#g-bukti', S.expBukti);
+  $$('#g-bukti button').forEach(b => b.onclick = () => { S.expBukti = S.expBukti === b.dataset.v ? '' : b.dataset.v; paintSeg('#g-bukti', S.expBukti); });
+  $('#x-save').onclick = () => {
+    const kategori = $('#x-kat').value, jumlahBiaya = Math.max(0, parseInt($('#x-jml').value) || 0), keterangan = $('#x-ket').value.trim();
+    if (jumlahBiaya <= 0) return toast('Isi jumlah biayanya dulu ya');
+    if (!S.expBukti) return toast('Pilih dulu bukti pengeluarannya (Bon/Kwitansi/Nota)', 3500);
+    const now = getNow();
+    DB.put('exp', { id: uid('e'), date: dstr(now), time: hhmm(now), at: nowISO(), kategori, jumlahBiaya, bukti: S.expBukti, keterangan, kasir: S.kasir || 'Tidak diketahui', log: [] }, dstr(now));
+    $('#x-jml').value = ''; $('#x-ket').value = ''; S.expBukti = ''; paintSeg('#g-bukti', ''); renderExpToday(); toast('Pengeluaran tersimpan');
+  };
+  renderExpToday();
+}
+function renderExpToday() {
+  const wrap = $('#x-list'); if (!wrap) return;
+  const l = expOn(today());
+  $('#x-tot').textContent = rp(sum(l, e => e.jumlahBiaya)); $('#x-h').textContent = `Pengeluaran hari ini (${l.length})`;
+  if (!l.length) { wrap.innerHTML = '<div class="empty">Belum ada pengeluaran hari ini.</div>'; return; }
+  wrap.innerHTML = l.map(e => `<div class="item"><div class="main"><div class="t">${esc(e.kategori)}</div><div class="s">${hhmmOf(e)}${e.bukti ? ' · ' + esc(e.bukti) : ''}${e.keterangan ? ' · ' + esc(e.keterangan) : ''} · oleh ${esc(e.kasir || '-')}</div></div>
+    <div class="v">${rp(e.jumlahBiaya)}</div><button class="mini bad" data-d="${e.id}">Hapus</button></div>`).join('');
+  $$('[data-d]', wrap).forEach(b => b.onclick = () => batalExp(b.dataset.d));
+}
+async function batalExp(id) {
+  const e = DB.get(id); if (!e) return;
+  if (!await needPin('Menghapus pengeluaran butuh PIN supervisor.')) return;
+  const why = await ask({ title: 'Hapus pengeluaran?', body: `${e.kategori} · ${rp(e.jumlahBiaya)}\nDitandai BATAL dan tidak dihitung di laporan.`, input: { label: 'Alasan', ph: 'mis. salah input', required: 'Alasan wajib diisi' }, ok: 'Hapus', danger: true });
+  if (!why) return;
+  e.batal = true; e.batalAlasan = why; e.batalAt = nowISO(); e.batalOleh = S.kasir || 'Owner'; addLog(e, 'Batal', why);
+  DB.put('exp', e, e.date); toast('Pengeluaran dihapus (ditandai batal)'); render();
+}
+/* ============================================================
+   LAPORAN — tampilan, PDF (digambar di canvas, gaya Barber), Excel
+   ============================================================ */
+const C = { navy: '#0a1f55', navy2: '#12307f', royal: '#1a3aa8', cyan: '#1c9be0', cyan2: '#6cc4f2', line: '#d8deea', muted: '#5d6b86', ink: '#0b1633', ok: '#1f8a5b', bad: '#c0392b', paper: '#f4f7fc', warn: '#b7791f', orange: '#d4741d' };
+const FONT = (w, sz, f = 'Inter') => `${w} ${sz}px "${f}","Segoe UI",Arial,sans-serif`;
+const SCRATCH = () => (SCRATCH.c ||= document.createElement('canvas').getContext('2d'));
+
+/* painter: dua putaran (ukur tinggi → gambar) supaya laporan sepanjang apa pun muat */
+async function paintReport(W, build) {
+  try { await document.fonts.ready; } catch (e) { }
+  const logo = await loadLogo();
+  const mk = (cv) => {
+    const x = cv ? cv.getContext('2d') : null, dry = !cv;
+    const o = { x, dry, W, y: 0, logo, P: 56 };
+    o.rect = (a, b, w, h, c) => { if (dry) return; x.fillStyle = c; x.fillRect(a, b, w, h); };
+    o.rrect = (a, b, w, h, r, c, stroke) => {
+      if (dry) return; x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath();
+      if (c) { x.fillStyle = c; x.fill(); } if (stroke) { x.strokeStyle = stroke; x.lineWidth = 2; x.stroke(); }
+    };
+    o.txt = (t, X, Y, { a = 'left', c = C.ink, w = 500, sz = 28, f = 'Inter' } = {}) => { if (dry) return; x.font = FONT(w, sz, f); x.fillStyle = c; x.textAlign = a; x.fillText(String(t), X, Y); };
+    o.lines = (t, maxW, { w = 500, sz = 26 } = {}) => { const s = SCRATCH(); s.font = FONT(w, sz); return wrapText(s, t, maxW); };
+    o.cut = (t, maxW, { w = 500, sz = 28 } = {}) => { const s = SCRATCH(); s.font = FONT(w, sz); let r = String(t); while (r.length > 1 && s.measureText(r).width > maxW) r = r.slice(0, -1); return r === String(t) ? r : r.trimEnd() + '…'; };
+    return o;
+  };
+  const d = mk(null); d.y = 0; const H = Math.ceil(build(d) + 10);
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const o = mk(cv); o.x.fillStyle = '#fff'; o.x.fillRect(0, 0, W, H); build(o);
+  return cv;
+}
+function repHeader(o, title, sub) {
+  const { W, P } = o;
+  if (!o.dry) { const g = o.x.createLinearGradient(0, 0, W, 270); g.addColorStop(0, C.navy); g.addColorStop(1, C.navy2); o.x.fillStyle = g; o.x.fillRect(0, 0, W, 270); }
+  const cw = 300, ch = o.logo ? 24 + (cw - 24) * o.logo.height / o.logo.width : 150;
+  if (!o.dry) {
+    const g2 = o.x.createLinearGradient(0, 36, 0, 36 + ch); g2.addColorStop(0, '#dcdfe5'); g2.addColorStop(1, '#b7bcc7'); o.rrect(P, 36, cw, ch, 18, g2);
+    if (o.logo) o.x.drawImage(o.logo, P + 12, 48, cw - 24, (cw - 24) * o.logo.height / o.logo.width);
+  }
+  o.txt(title, P + cw + 36, 96, { c: C.cyan2, w: 600, sz: 28, f: 'Space Grotesk' });
+  o.txt(ST().toko, P + cw + 36, 156, { c: '#fff', w: 800, sz: 50 });
+  o.txt(sub, P + cw + 36, 204, { c: '#d6e2ff', w: 500, sz: 26 });
+  o.y = Math.max(270, 36 + ch + 24) + 40;
+}
+function repSec(o, t) {
+  o.txt(t.toUpperCase(), o.P, o.y, { c: C.royal, w: 700, sz: 24, f: 'Space Grotesk' }); o.y += 14;
+  o.rect(o.P, o.y, o.W - 2 * o.P, 3, C.line); o.y += 44;
+}
+function repKV(o, k, v, { bold = false, c = C.ink, sz = 28, sub = '' } = {}) {
+  const y0 = o.y;
+  o.txt(k, o.P, y0, { w: bold ? 800 : 500, sz, c: bold ? C.ink : '#33425f' }); o.txt(v, o.W - o.P, y0, { a: 'right', w: bold ? 800 : 700, sz, c });
+  if (sub) o.txt(sub, o.P, y0 + 30, { sz: 21, c: C.muted });
+  o.y += sz + 18 + (sub ? 26 : 0);
+}
+function repBox(o, X, w, h, lab, val, dark, vsz = 42) {
+  if (!o.dry) {
+    if (dark) { const g = o.x.createLinearGradient(X, o.y, X + w, o.y + h); g.addColorStop(0, C.navy); g.addColorStop(1, C.navy2); o.rrect(X, o.y, w, h, 16, g); }
+    else o.rrect(X, o.y, w, h, 16, C.paper, C.line);
+  }
+  o.txt(lab.toUpperCase(), X + 24, o.y + 42, { c: dark ? C.cyan2 : C.muted, w: 700, sz: 21, f: 'Space Grotesk' });
+  o.txt(val, X + 24, o.y + h - 30, { c: dark ? '#fff' : C.ink, w: 800, sz: vsz });
+}
+function repBoxes(o, items, h = 130) {
+  const gap = 20, w = (o.W - 2 * o.P - gap * (items.length - 1)) / items.length;
+  items.forEach((it, i) => repBox(o, o.P + i * (w + gap), w, h, it[0], it[1], it[2], it[3] || (items.length > 2 ? 32 : 42)));
+  o.y += h + 58;
+}
+function repTable(o, cols, rows, { voidIdx = [], total = null } = {}) {
+  const { P, W } = o;
+  o.rect(P, o.y - 28, W - 2 * P, 46, C.paper);
+  cols.forEach(c => o.txt(c.h, c.a === 'right' ? c.x : c.x, o.y, { a: c.a || 'left', c: C.muted, w: 700, sz: 19, f: 'Space Grotesk' })); o.y += 36;
+  rows.forEach((r, ri) => {
+    const bad = voidIdx.includes(ri);
+    cols.forEach((c, i) => o.txt(o.cut(r[i] ?? '', c.w || 300, { w: i === cols.length - 1 ? 700 : 500, sz: 24 }), c.x, o.y, { a: c.a || 'left', sz: 24, w: i === cols.length - 1 ? 700 : 500, c: bad ? '#9aa5bd' : C.ink }));
+    if (bad) o.rect(P, o.y - 8, W - 2 * P, 2, '#9aa5bd');
+    o.y += 14; o.rect(P, o.y, W - 2 * P, 1.5, '#e6ebf4'); o.y += 32;
+  });
+  if (total) { o.rect(P, o.y - 22, W - 2 * P, 3, C.navy2); o.y += 14; cols.forEach((c, i) => { if (total[i] != null) o.txt(total[i], c.x, o.y, { a: c.a || 'left', sz: 25, w: 800 }); }); o.y += 34; }
+}
+function repBars(o, title, data, dayN, c1, c2, h = 260) {
+  const { P, W } = o, X0 = P + 10, w = W - 2 * P - 20, max = Math.max(...data, 1), gw = w / dayN, bw = Math.max(4, Math.min(22, gw * .55));
+  o.txt(title, P, o.y, { w: 700, sz: 26 });
+  const tot = data.reduce((a, b) => a + b, 0); o.txt(`Total ${tot} · rata-rata ${Math.round(tot / dayN * 10) / 10}/hari`, W - P, o.y, { a: 'right', c: C.muted, sz: 22 }); o.y += 28;
+  const base = o.y + h;
+  o.rect(X0, base, w, 2, C.line);
+  data.forEach((v, i) => {
+    const bh = v > 0 ? Math.max(6, Math.round(v / max * (h - 30))) : 0, cx = X0 + i * gw + gw / 2;
+    if (bh && !o.dry) { const g = o.x.createLinearGradient(0, base - bh, 0, base); g.addColorStop(0, c1); g.addColorStop(1, c2); o.x.fillStyle = g; o.x.fillRect(cx - bw / 2, base - bh, bw, bh); }
+    if (v > 0 && gw >= 18) o.txt(v, cx, base - bh - 8, { a: 'center', sz: 17, c: C.muted });
+    if (dayN <= 16 || (i + 1) % 5 === 0 || i === 0 || i === dayN - 1) o.txt(i + 1, cx, base + 28, { a: 'center', sz: 18, c: C.muted });
+  });
+  o.y = base + 90;
+}
+function repFooter(o, extra) {
+  o.y += 20; o.txt('Dibuat otomatis oleh Kasir Digital ' + ST().toko + (extra ? ' · ' + extra : ''), o.W / 2, o.y, { a: 'center', sz: 20, c: '#8a96b0' }); o.y += 50;
+}
+
+/* ---------- data ---------- */
+function dayData(d) {
+  const tx = trxOn(d), jl = jual(tx), as = asr(tx), pg = expOn(d), by = m => sum(jl.filter(t => t.payment === m), t => t.total);
+  return {
+    d, tx, jl, as, pg, pemasukan: sum(jl, t => t.total), galon: sum(jl, t => t.jumlah), pelanggan: new Set(jl.map(t => t.customerId || t.customerName)).size,
+    tunai: by('tunai'), qris: by('qris'), transfer: by('transfer'), pengeluaran: sum(pg, e => e.jumlahBiaya), galonAsrama: sum(as, t => t.jumlah),
+    batalN: allTrx().filter(t => t.date === d && t.batal).length + allExp().filter(e => e.date === d && e.batal).length
+  };
+}
+function monthData(ym) {
+  const n = daysIn(ym), tx = trxMonth(ym), jl = jual(tx), as = asr(tx), pg = expMonth(ym);
+  const jualArr = new Array(n).fill(0), asArr = new Array(n).fill(0), perDay = [];
+  tx.forEach(t => { const i = +t.date.slice(8, 10) - 1; if (t.isAsrama) asArr[i] += t.jumlah; else jualArr[i] += t.jumlah; });
+  for (let i = 1; i <= n; i++) {
+    const d = ym + '-' + pad(i), j = jl.filter(t => t.date === d), p = pg.filter(e => e.date === d);
+    perDay.push({ d, trx: j.length, galon: sum(j, t => t.jumlah), asrama: sum(as.filter(t => t.date === d), t => t.jumlah), masuk: sum(j, t => t.total), keluar: sum(p, e => e.jumlahBiaya) });
+  }
+  const by = m => sum(jl.filter(t => t.payment === m), t => t.total);
+  const asramaBy = {}; as.forEach(t => asramaBy[t.customerName] = (asramaBy[t.customerName] || 0) + t.jumlah);
+  const kat = {}; pg.forEach(e => kat[e.kategori] = (kat[e.kategori] || 0) + e.jumlahBiaya);
+  const ambil = jl.filter(t => !t.antar), antar = jl.filter(t => t.antar);
+  return {
+    ym, n, tx, jl, as, pg, jualArr, asArr, perDay, asramaBy, kat, ambil, antar,
+    pemasukan: sum(jl, t => t.total), galon: sum(jl, t => t.jumlah), galonAsrama: sum(as, t => t.jumlah), pengeluaran: sum(pg, e => e.jumlahBiaya),
+    tunai: by('tunai'), qris: by('qris'), transfer: by('transfer'), hariAktif: perDay.filter(p => p.trx || p.asrama).length
+  };
+}
+
+/* ---------- laporan harian (gambar) ---------- */
+async function renderDaily(d, sig) {
+  const D = dayData(d), sigImg = sig ? await loadImg(sig.dataUrl) : null;
+  return paintReport(1080, o => {
+    const { P, W } = o;
+    repHeader(o, 'LAPORAN HARIAN', fmtTgl(d));
+    repBoxes(o, [['Total pemasukan', rp(D.pemasukan), true, 46], ['Galon terjual', String(D.galon), false, 46]], 140);
+    repBoxes(o, [['Tunai', rp(D.tunai)], ['QRIS', rp(D.qris)], ['Transfer', rp(D.transfer)]], 124);
+    repSec(o, 'Rincian pemasukan');
+    const ambil = D.jl.filter(t => !t.antar), antar = D.jl.filter(t => t.antar);
+    repKV(o, `Ambil sendiri · ${ambil.length} transaksi`, rp(sum(ambil, t => t.total)), { sub: `${sum(ambil, t => t.jumlah)} galon` });
+    repKV(o, `Diantar · ${antar.length} transaksi`, rp(sum(antar, t => t.total)), { sub: `${sum(antar, t => t.jumlah)} galon` });
+    repKV(o, 'Galon besar / kecil', `${sum(D.jl.filter(t => t.ukuran !== 'kecil'), t => t.jumlah)} / ${sum(D.jl.filter(t => t.ukuran === 'kecil'), t => t.jumlah)}`);
+    repKV(o, 'Jumlah pelanggan', String(D.pelanggan));
+    o.y += 34; repSec(o, `Daftar pemasukan (${D.jl.length})`);
+    const cols = [{ h: 'JAM', x: P, w: 90 }, { h: 'PELANGGAN', x: P + 100, w: 330 }, { h: 'GALON', x: P + 480, w: 80 }, { h: 'ANTAR', x: P + 570, w: 90 }, { h: 'BAYAR', x: P + 680, w: 130 }, { h: 'TOTAL', x: W - P, a: 'right', w: 190 }];
+    if (D.jl.length) repTable(o, cols, D.jl.slice().reverse().map(t => [hhmmOf(t), t.customerName, `${t.jumlah}${t.ukuran === 'kecil' ? ' K' : ''}`, t.antar ? 'Ya' : '-', bayarLabel(t.payment), rp(t.total)]), { total: ['', `Jumlah Pemasukan`, String(D.galon), '', '', rp(D.pemasukan)] });
+    else { o.txt('Tidak ada transaksi jual di tanggal ini', P, o.y, { c: C.muted }); o.y += 50; }
+    if (D.as.length) {
+      o.y += 34; repSec(o, 'Konsumsi asrama (internal, bukan pemasukan)');
+      repTable(o, [{ h: 'JAM', x: P, w: 90 }, { h: 'ASRAMA', x: P + 100, w: 420 }, { h: 'JENIS', x: P + 560, w: 160 }, { h: 'GALON', x: W - P, a: 'right', w: 120 }],
+        D.as.slice().reverse().map(t => [hhmmOf(t), t.customerName, t.ukuran === 'kecil' ? 'Kecil' : 'Besar', String(t.jumlah)]), { total: ['', 'Total galon asrama', '', String(D.galonAsrama)] });
+    }
+    o.y += 34; repSec(o, 'Pengeluaran');
+    if (D.pg.length) repTable(o, [{ h: 'JENIS', x: P, w: 330 }, { h: 'KETERANGAN', x: P + 350, w: 290 }, { h: 'BUKTI', x: P + 660, w: 150 }, { h: 'BIAYA', x: W - P, a: 'right', w: 190 }],
+      D.pg.slice().reverse().map(e => [e.kategori, e.keterangan || '-', e.bukti || '-', rp(e.jumlahBiaya)]), { total: ['Jumlah Pengeluaran', '', '', rp(D.pengeluaran)] });
+    else { o.txt('Tidak ada pengeluaran di tanggal ini', P, o.y, { c: C.muted }); o.y += 50; }
+    o.y += 34; repSec(o, 'Ringkasan keuangan');
+    repKV(o, 'Jumlah pemasukan', rp(D.pemasukan)); repKV(o, '− Jumlah pengeluaran', rp(D.pengeluaran));
+    const net = D.pemasukan - D.pengeluaran;
+    repKV(o, 'Saldo bersih', rp(net), { bold: true, c: net < 0 ? C.bad : C.ok, sz: 32 });
+    if (sig) {
+      o.y += 30; o.rect(P, o.y, W - 2 * P, 2, C.line); o.y += 50;
+      o.txt('Mengetahui,', W - P - 340, o.y, { c: C.muted, sz: 24 }); o.y += 10;
+      if (sigImg && !o.dry) o.x.drawImage(sigImg, W - P - 360, o.y, 340, 106); o.y += 134;
+      o.rect(W - P - 360, o.y - 18, 340, 2, C.ink);
+      o.txt(sig.name, W - P - 190, o.y + 14, { a: 'center', w: 800, sz: 28 }); o.y += 42;
+      o.txt(`${fmtTglS(dstr(sig.at))} ${hhmm(sig.at)}`, W - P - 190, o.y, { a: 'center', c: C.muted, sz: 21 }); o.y += 40;
+    }
+    repFooter(o, D.batalN ? `${D.batalN} data dibatalkan tidak dihitung` : '');
+    return o.y;
+  });
+}
+
+/* ---------- laporan bulanan (gambar) ---------- */
+async function renderMonthly(ym) {
+  const M = monthData(ym);
+  return paintReport(1080, o => {
+    const { P, W } = o;
+    repHeader(o, 'LAPORAN BULANAN', fmtBln(ym));
+    repBoxes(o, [['Total pemasukan', rp(M.pemasukan), true, 46], ['Galon terjual', String(M.galon), false, 46]], 140);
+    repBoxes(o, [['Pengeluaran', rp(M.pengeluaran)], ['Saldo bersih', rp(M.pemasukan - M.pengeluaran)], ['Galon asrama', String(M.galonAsrama)]], 124);
+    repSec(o, 'Rincian pemasukan');
+    repKV(o, 'Tunai', rp(M.tunai)); repKV(o, 'QRIS', rp(M.qris)); repKV(o, 'Transfer', rp(M.transfer));
+    repKV(o, `Ambil sendiri · ${M.ambil.length} transaksi`, rp(sum(M.ambil, t => t.total)), { sub: `${sum(M.ambil, t => t.jumlah)} galon` });
+    repKV(o, `Diantar · ${M.antar.length} transaksi`, rp(sum(M.antar, t => t.total)), { sub: `${sum(M.antar, t => t.jumlah)} galon` });
+    repKV(o, 'Jumlah transaksi jual', String(M.jl.length)); repKV(o, 'Rata-rata galon terjual / hari', String(Math.round(M.galon / M.n * 10) / 10));
+    repKV(o, 'Jumlah pemasukan', rp(M.pemasukan), { bold: true, c: C.royal, sz: 32 });
+    o.y += 34; repSec(o, 'Grafik galon per hari');
+    repBars(o, 'Galon terjual (pelanggan)', M.jualArr, M.n, C.cyan, C.royal);
+    repBars(o, 'Galon ke asrama', M.asArr, M.n, '#f0a35a', C.orange, 220);
+    const names = Object.keys(M.asramaBy).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    if (names.length) { o.y += 10; repSec(o, 'Total per asrama'); names.forEach(n => repKV(o, n, M.asramaBy[n] + ' galon')); }
+    o.y += 34; repSec(o, 'Rincian per hari');
+    const rows = M.perDay.filter(p => p.trx || p.asrama || p.keluar);
+    if (rows.length) repTable(o, [{ h: 'TGL', x: P, w: 150 }, { h: 'TRX', x: P + 190, a: 'right', w: 70 }, { h: 'GALON', x: P + 300, a: 'right', w: 80 }, { h: 'ASRAMA', x: P + 410, a: 'right', w: 90 }, { h: 'PEMASUKAN', x: P + 650, a: 'right', w: 200 }, { h: 'PENGELUARAN', x: W - P, a: 'right', w: 200 }],
+      rows.map(p => [fmtTglS(p.d).slice(0, -5), String(p.trx), String(p.galon), String(p.asrama), rp(p.masuk), rp(p.keluar)]),
+      { total: ['TOTAL', String(M.jl.length), String(M.galon), String(M.galonAsrama), rp(M.pemasukan), rp(M.pengeluaran)] });
+    else { o.txt('Belum ada data di bulan ini', P, o.y, { c: C.muted }); o.y += 50; }
+    const kats = Object.entries(M.kat).sort((a, b) => b[1] - a[1]);
+    o.y += 34; repSec(o, 'Pengeluaran per jenis');
+    if (kats.length) { kats.forEach(([k, v]) => repKV(o, k, rp(v))); repKV(o, 'Jumlah pengeluaran', rp(M.pengeluaran), { bold: true, c: C.bad }); }
+    else { o.txt('Tidak ada pengeluaran', P, o.y, { c: C.muted }); o.y += 50; }
+    o.y += 34; repSec(o, 'Ringkasan keuangan');
+    repKV(o, 'Jumlah pemasukan', rp(M.pemasukan)); repKV(o, '− Jumlah pengeluaran', rp(M.pengeluaran));
+    const net = M.pemasukan - M.pengeluaran; repKV(o, 'Saldo bersih', rp(net), { bold: true, c: net < 0 ? C.bad : C.ok, sz: 32 });
+    repFooter(o);
+    return o.y;
+  });
+}
+
+/* ---------- slide ringkasan 16:9 (untuk presentasi) ---------- */
+async function renderSlides(ym) {
+  const M = monthData(ym), out = [];
+  const slide = async (build) => {
+    const cv = await paintReport(1600, o => { build(o); return 900; });
+    return cv;
+  };
+  out.push(await slide(o => {
+    o.P = 70;
+    repHeader(o, 'RINGKASAN BULAN', fmtBln(ym)); o.y = 330;
+    repBoxes(o, [['Galon terjual', String(M.galon), true, 54], ['Galon ke asrama', String(M.galonAsrama)], ['Ambil / Antar', `${M.ambil.length} / ${M.antar.length}`], ['Pemasukan', rp(M.pemasukan)]], 170);
+    repBars(o, 'Galon terjual per hari', M.jualArr, M.n, C.cyan, C.royal, 250);
+  }));
+  const names = Object.keys(M.asramaBy).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  out.push(await slide(o => {
+    o.P = 70; repHeader(o, 'RINGKASAN BULAN', fmtBln(ym)); o.y = 330;
+    repBars(o, 'Galon ke asrama per hari', M.asArr, M.n, '#f0a35a', C.orange, 220);
+    if (names.length) {
+      const col = 3, w = (o.W - 140 - 20 * (col - 1)) / col;
+      names.forEach((n, i) => { const X = 70 + (i % col) * (w + 20), Y = o.y + Math.floor(i / col) * 76; o.rrect(X, Y, w, 62, 12, C.paper, C.line); o.txt(n, X + 20, Y + 40, { sz: 24 }); o.txt(M.asramaBy[n] + ' galon', X + w - 20, Y + 40, { a: 'right', w: 800, sz: 24, c: C.orange }); });
+    }
+  }));
+  return out;
+}
+
+/* ---------- tanda tangan ---------- */
+function sigPad(cv) {
+  const r = cv.getBoundingClientRect(), k = 2; cv.width = Math.max(300, r.width) * k; cv.height = Math.max(120, r.height) * k;
+  const x = cv.getContext('2d'); x.scale(k, k); x.lineWidth = 2.4; x.lineCap = 'round'; x.lineJoin = 'round'; x.strokeStyle = C.navy;
+  let down = false, has = false;
+  const pos = e => { const b = cv.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; };
+  cv.onpointerdown = e => { down = true; has = true; const [a, b] = pos(e); x.beginPath(); x.moveTo(a, b); cv.setPointerCapture?.(e.pointerId); e.preventDefault(); };
+  cv.onpointermove = e => { if (!down) return; const [a, b] = pos(e); x.lineTo(a, b); x.stroke(); e.preventDefault(); };
+  cv.onpointerup = cv.onpointercancel = () => { down = false; };
+  return { clear: () => { x.clearRect(0, 0, cv.width, cv.height); has = false; }, empty: () => !has, data: () => cv.toDataURL('image/png') };
+}
+function startDaily(d) {
+  const names = [...new Set([...(ST().kasir || []), 'Owner'])];
+  let name = '';
+  const sh = openSheet(`<div class="hd"><h3>Siapa yang tanda tangan?</h3><button class="x" id="cx">×</button></div>
+    <div class="hint">Laporan harian perlu disetujui sebelum dibagikan.</div>
+    <div class="seg pill-s" id="tn">${names.map(n => `<button data-n="${esc(n)}">${esc(n)}</button>`).join('')}</div>
+    <label class="f">Atau nama lain<input class="in" id="tnm" placeholder="Ketik nama" autocomplete="off"></label>
+    <button class="btn" id="tnext">Lanjut ke tanda tangan</button>`);
+  $('#cx', sh).onclick = closeSheet;
+  $$('#tn button', sh).forEach(b => b.onclick = () => { $$('#tn button', sh).forEach(x => x.classList.remove('sel')); b.classList.add('sel'); $('#tnm', sh).value = b.dataset.n; });
+  $('#tnext', sh).onclick = () => {
+    name = $('#tnm', sh).value.trim(); if (!name) return toast('Pilih atau ketik nama dulu');
+    sh.innerHTML = `<div class="hd"><h3>Tanda tangan — ${esc(name)}</h3><button class="x" id="cx">×</button></div>
+      <div class="hint">Gores jari di kotak di bawah.</div><canvas class="sig" id="sg"></canvas>
+      <div class="grid2"><button class="btn ghost" id="sc" style="margin-top:0">Bersihkan</button><button class="btn" id="sk" style="margin-top:0">Buat laporan</button></div>`;
+    $('#cx', sh).onclick = closeSheet;
+    const pad_ = sigPad($('#sg', sh));
+    $('#sc', sh).onclick = () => pad_.clear();
+    $('#sk', sh).onclick = () => { if (pad_.empty()) return toast('Tanda tangan dulu ya di kotaknya'); showDaily(d, { name, dataUrl: pad_.data(), at: new Date() }); };
+  };
+}
+async function showDaily(d, sig) {
+  const D = dayData(d);
+  if (!D.jl.length && !D.as.length && !D.pg.length) { closeSheet(); return toast('Tidak ada transaksi maupun pengeluaran di tanggal itu'); }
+  const sh = openSheet('<div class="hd"><h3>Laporan Harian</h3><button class="x" id="cx">×</button></div><div class="hint">Menyiapkan laporan…</div>', true);
+  $('#cx', sh).onclick = closeSheet;
+  let cv; try { cv = await renderDaily(d, sig); } catch (e) { console.error(e); closeSheet(); return toast('Gagal membuat laporan: ' + e.message, 5000); }
+  showReportSheet(sh, cv, `Laporan-Harian-Aquaners-${d}`, 'Laporan Harian ' + d, `Laporan ${fmtTglS(d)}`);
+}
+function showReportSheet(sh, cv, base, title, hd) {
+  const url = cv.toDataURL('image/jpeg', .9);
+  sh.innerHTML = `<div class="hd"><h3>${esc(hd)}</h3><button class="x" id="cx">×</button></div>
+    <div class="grid2"><button class="btn cyan" id="rs" style="margin-top:0">Bagikan PDF</button><button class="btn ghost" id="ri" style="margin-top:0">Simpan Gambar</button></div>
+    <img class="report-img" src="${url}" alt="${esc(hd)}">`;
+  $('#cx', sh).onclick = closeSheet;
+  $('#rs', sh).onclick = async () => {
+    try { await shareBlob(await pdfFromCanvas(cv, { quality: .9 }), base + '.pdf', title); }
+    catch (e) { await shareBlob(await canvasBlob(cv, 'image/jpeg', .9), base + '.jpg', title); }   // tanpa internet: gambar
+  };
+  $('#ri', sh).onclick = async () => shareBlob(await canvasBlob(cv, 'image/jpeg', .92), base + '.jpg', title);
+}
+
+/* ============================================================
+   TAB LAPORAN
+   ============================================================ */
+function vLaporan() {
+  const tabs = [['harian', 'Harian'], ['bulanan', 'Bulanan'], ['riwayat', 'Riwayat']];
+  $('#main').innerHTML = `<div class="row between"><h1>Laporan</h1><button class="btn sm ghost" id="refresh">↻ Muat ulang</button></div>
+    <div class="ownertabs" id="lt">${tabs.map(([k, l]) => `<button data-o="${k}" class="${S.lapTab === k ? 'sel' : ''}">${l}</button>`).join('')}</div><div id="lsub" class="sec"></div>`;
+  $$('#lt [data-o]').forEach(b => b.onclick = () => { S.lapTab = b.dataset.o; vLaporan(); });
+  $('#refresh').onclick = async () => { toast('Memuat data terbaru…'); await DB.pull(); render(); };
+  ({ harian: lapHarian, bulanan: lapBulanan, riwayat: lapRiwayat })[S.lapTab]($('#lsub'));
+}
+const cacheCut = () => addDays(dstr(new Date()), -CACHE_DAYS);
+function lapHarian(el) {
+  const d = S.lapDate || today();
+  const D = dayData(d), isT = d === today();
+  el.innerHTML = `<div class="datebar"><button id="dp">‹</button><label class="dlabel"><small class="${isT ? '' : 'past'}">${isT ? 'Hari ini' : 'Tanggal lalu'}</small><b>${fmtTglS(d)}</b><input type="date" id="dd" value="${d}"></label><button id="dn" ${d >= today() ? 'disabled' : ''}>›</button></div>
+    <div class="stats"><div class="stat hero"><span>Total pemasukan</span><b>${rp(D.pemasukan)}</b></div><div class="stat"><span>Galon terjual</span><b>${D.galon}</b></div><div class="stat"><span>Pelanggan</span><b>${D.pelanggan}</b></div>
+    <div class="stat"><span>Tunai</span><b>${rp(D.tunai)}</b></div><div class="stat"><span>QRIS</span><b>${rp(D.qris)}</b></div><div class="stat"><span>Transfer</span><b>${rp(D.transfer)}</b></div>
+    <div class="stat"><span>Galon asrama</span><b>${D.galonAsrama}</b></div><div class="stat bad"><span>Pengeluaran</span><b>${rp(D.pengeluaran)}</b></div><div class="stat"><span>Saldo bersih</span><b style="color:${D.pemasukan - D.pengeluaran < 0 ? C.bad : C.ok}">${rp(D.pemasukan - D.pengeluaran)}</b></div></div>
+    <button class="btn" id="mk">📄 Buat Laporan Harian (PDF)</button>
+    <div class="card"><h2>Transaksi tanggal ini (${D.tx.length})</h2><div class="list">${D.tx.length ? D.tx.map(t => `<div class="item"><div class="main"><div class="t">${esc(t.customerName)} ${t.antar ? '<span class="tag antar">ANTAR</span>' : ''}${t.isAsrama ? '<span class="tag asrama">ASRAMA</span>' : ''}</div><div class="s">${hhmmOf(t)} · ${t.jumlah} galon${t.isAsrama ? '' : ' · ' + bayarLabel(t.payment)} · ${esc(t.kasir || '-')}</div></div><div class="v">${t.isAsrama ? 'Internal' : rp(t.total)}</div></div>`).join('') : '<div class="empty">Belum ada transaksi di tanggal ini.</div>'}</div></div>`;
+  const go = async nd => { S.lapDate = nd; if (nd < cacheCut()) { toast('Memuat data…', 1500); await DB.loadRange(nd, nd); } lapHarian(el); };
+  $('#dp').onclick = () => go(addDays(d, -1)); $('#dn').onclick = () => go(addDays(d, 1));
+  $('#dd').onchange = e => { if (e.target.value && e.target.value <= today()) go(e.target.value); };
+  $('#mk').onclick = () => startDaily(d);
+  if (d < cacheCut() && !lapHarian.loaded?.[d]) { (lapHarian.loaded ||= {})[d] = 1; DB.loadRange(d, d).then(() => { if ($('#mk') && S.lapDate === d) lapHarian(el); }); }
+}
+async function lapBulanan(el) {
+  const ym = S.lapMonth || today().slice(0, 7);
+  if (ym + '-01' < cacheCut() && DB.online()) { el.innerHTML = '<div class="empty">Memuat data bulan ini…</div>'; await DB.loadRange(ym + '-01', ym + '-31'); }
+  const M = monthData(ym), isNow = ym >= today().slice(0, 7);
+  const rowsAmb = [['Ambil sendiri', M.ambil], ['Diantar', M.antar]];
+  el.innerHTML = `<div class="datebar"><button id="mp">‹</button><label class="dlabel"><small class="${isNow ? '' : 'past'}">${isNow ? 'Bulan ini' : 'Bulan lalu'}</small><b>${fmtBln(ym)}</b><input type="month" id="mm" value="${ym}"></label><button id="mn" ${isNow ? 'disabled' : ''}>›</button></div>
+    <div class="stats"><div class="stat hero"><span>Total pemasukan</span><b>${rp(M.pemasukan)}</b></div><div class="stat"><span>Galon terjual</span><b>${M.galon}</b></div><div class="stat"><span>Galon asrama</span><b>${M.galonAsrama}</b></div>
+    <div class="stat bad"><span>Pengeluaran</span><b>${rp(M.pengeluaran)}</b></div><div class="stat"><span>Saldo bersih</span><b style="color:${M.pemasukan - M.pengeluaran < 0 ? C.bad : C.ok}">${rp(M.pemasukan - M.pengeluaran)}</b></div><div class="stat"><span>Rata-rata galon/hari</span><b>${Math.round(M.galon / M.n * 10) / 10}</b></div></div>
+    <button class="btn" id="mpdf">📄 Laporan Bulanan (PDF)</button>
+    <div class="grid2"><button class="btn ghost" id="mslide" style="margin-top:0">Slide ringkasan (presentasi)</button><button class="btn ghost" id="mxl" style="margin-top:0">Excel rekap lengkap</button></div>
+    <button class="btn ghost" id="mmat" style="margin-top:0">Excel rincian asrama harian</button>
+    <div class="card"><h2><span class="eb">RINCIAN</span> Ambil sendiri vs Diantar</h2><div class="scrollx"><table class="tbl"><thead><tr><th>Metode</th><th class="r">Transaksi</th><th class="r">Galon</th><th class="r">Omzet</th></tr></thead><tbody>
+      ${rowsAmb.map(([n, l]) => `<tr><td>${n}</td><td class="r">${l.length}</td><td class="r">${sum(l, t => t.jumlah)}</td><td class="r">${rp(sum(l, t => t.total))}</td></tr>`).join('')}
+      <tr class="tot"><td>Total</td><td class="r">${M.jl.length}</td><td class="r">${M.galon}</td><td class="r">${rp(M.pemasukan)}</td></tr></tbody></table></div>
+      <div class="kv" style="margin-top:10px"><div><span>Tunai</span><b>${rp(M.tunai)}</b></div><div><span>QRIS</span><b>${rp(M.qris)}</b></div><div><span>Transfer</span><b>${rp(M.transfer)}</b></div></div></div>
+    <div class="card" id="cj"><h2><span class="eb">TREN</span> Galon terjual per hari (pelanggan)</h2>${barsHtml(M.jualArr, '')}<button class="btn ghost sm" data-g="jual" style="margin-top:12px">Simpan gambar grafik</button></div>
+    <div class="card" id="ca"><h2><span class="eb">TREN</span> Galon ke asrama per hari</h2>${barsHtml(M.asArr, 'as')}<button class="btn ghost sm" data-g="asrama" style="margin-top:12px">Simpan gambar grafik</button></div>
+    ${Object.keys(M.asramaBy).length ? `<div class="card"><h2>Total per asrama</h2><div class="kv">${Object.keys(M.asramaBy).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).map(n => `<div><span>${esc(n)}</span><b>${M.asramaBy[n]} galon</b></div>`).join('')}</div></div>` : ''}`;
+  const go = n => { S.lapMonth = addMonths(ym, n); lapBulanan(el); };
+  $('#mp').onclick = () => go(-1); $('#mn').onclick = () => go(1);
+  $('#mm').onchange = e => { if (e.target.value && e.target.value <= today().slice(0, 7)) { S.lapMonth = e.target.value; lapBulanan(el); } };
+  const busy = (btn, fn) => async () => { btn.disabled = true; try { await fn(); } catch (e) { console.error(e); toast('Gagal: ' + (e.message || e), 5000); } finally { btn.disabled = false; } };
+  $('#mpdf').onclick = busy($('#mpdf'), async () => {
+    const sh = openSheet('<div class="hd"><h3>Laporan Bulanan</h3><button class="x" id="cx">×</button></div><div class="hint">Menyiapkan laporan…</div>', true); $('#cx', sh).onclick = closeSheet;
+    showReportSheet(sh, await renderMonthly(ym), `Laporan-Bulanan-Aquaners-${ym}`, 'Laporan Bulanan ' + fmtBln(ym), 'Laporan ' + fmtBln(ym));
+  });
+  $('#mslide').onclick = busy($('#mslide'), async () => {
+    const slides = await renderSlides(ym);
+    await loadScript(JSPDF_SRC); const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'px', format: [1600, 900], hotfixes: ['px_scaling'], compress: true });
+    slides.forEach((cv, i) => { if (i) doc.addPage([1600, 900], 'landscape'); doc.addImage(cv.toDataURL('image/jpeg', .9), 'JPEG', 0, 0, 1600, 900); });
+    await shareBlob(doc.output('blob'), `aquaners-ringkasan-${ym}.pdf`, 'Ringkasan ' + fmtBln(ym));
+  });
+  $('#mxl').onclick = busy($('#mxl'), () => exportExcelAll());
+  $('#mmat').onclick = busy($('#mmat'), () => exportAsramaMatrix(ym));
+  $$('[data-g]').forEach(b => b.onclick = busy(b, async () => {
+    const asr_ = b.dataset.g === 'asrama', cv = await paintReport(1200, o => { repHeader(o, asr_ ? 'GRAFIK GALON ASRAMA' : 'GRAFIK GALON TERJUAL', fmtBln(ym)); o.y += 10; repBars(o, asr_ ? 'Galon ke asrama per hari' : 'Galon terjual per hari (pelanggan)', asr_ ? M.asArr : M.jualArr, M.n, asr_ ? '#f0a35a' : C.cyan, asr_ ? C.orange : C.royal, 300); return o.y; });
+    await shareBlob(await canvasBlob(cv), `grafik-galon-${asr_ ? 'asrama' : 'jual'}-${ym}.png`, 'Grafik galon');
+  }));
+}
+function barsHtml(arr, cls) {
+  if (!arr.some(v => v > 0)) return '<div class="empty">Belum ada data di bulan ini.</div>';
+  const max = Math.max(...arr, 1);
+  return `<div class="bars ${cls}">${arr.map((v, i) => `<div class="g"><em>${v || ''}</em><i style="height:${v ? Math.max(4, Math.round(v / max * 100)) * 0.78 : 1}%"></i><u>${i + 1}</u></div>`).join('')}</div>`;
+}
+function lapRiwayat(el) {
+  const f = S.riwayatFilter, all = allTrx(), rows = (f ? all.filter(t => t.date === f) : all).slice(0, 300);
+  el.innerHTML = `<div class="card"><h2><span class="eb">RIWAYAT</span> Semua transaksi</h2>
+    <div class="addrow"><input class="in" type="date" id="rf" value="${esc(f)}"><button class="btn ghost" id="rr">Reset</button><button class="btn" id="rx">Export Excel</button></div>
+    <div class="hint" style="margin:8px 0">Menampilkan ${rows.length} transaksi terbaru${f ? ' di tanggal ' + fmtTglS(f) : ` (maks. 300, data ${CACHE_DAYS} hari terakhir; pilih tanggal untuk yang lebih lama)`}.</div>
+    <div class="scrollx"><table class="tbl"><thead><tr><th>Tanggal</th><th>Nama</th><th class="r">Galon</th><th>Antar</th><th>Bayar</th><th>Tipe</th><th>Kasir</th><th class="r">Total</th><th></th></tr></thead><tbody>
+    ${rows.length ? rows.map(t => `<tr class="${t.batal ? 'void' : ''}"><td>${t.date.slice(5)} <span class="muted">${hhmmOf(t)}</span></td><td>${esc(t.customerName)}</td><td class="r">${t.jumlah}</td><td>${t.antar ? 'Ya' : '-'}</td><td>${t.isAsrama ? '-' : bayarLabel(t.payment)}</td><td>${t.isAsrama ? 'Asrama' : 'Jual'}</td><td>${esc(t.kasir || '-')}</td><td class="r">${t.isAsrama ? 'Internal' : rp(t.total)}</td>
+    <td style="white-space:nowrap">${t.batal ? '<span class="tag void">BATAL</span>' : `<button class="mini" data-s="${t.id}">Struk</button> <button class="mini" data-e="${t.id}">Edit</button> <button class="mini bad" data-d="${t.id}">Hapus</button>`}</td></tr>`).join('') : '<tr><td colspan="9" class="empty">Tidak ada transaksi.</td></tr>'}
+    </tbody></table></div></div>`;
+  $('#rf').onchange = async e => { S.riwayatFilter = e.target.value; if (e.target.value && e.target.value < cacheCut()) await DB.loadRange(e.target.value, e.target.value); lapRiwayat(el); };
+  $('#rr').onclick = () => { S.riwayatFilter = ''; lapRiwayat(el); };
+  $('#rx').onclick = () => exportExcelAll();
+  $$('[data-s]', el).forEach(b => b.onclick = () => strukSheet(DB.get(b.dataset.s)));
+  $$('[data-e]', el).forEach(b => b.onclick = () => editTrx(b.dataset.e));
+  $$('[data-d]', el).forEach(b => b.onclick = () => batalTrx(b.dataset.d));
+}
+
+/* ---------- Excel ---------- */
+async function needXLSX() { try { await loadScript(XLSX_SRC); return true; } catch (e) { toast('Perlu internet sebentar untuk export Excel'); return false; } }
+async function saveXlsx(wb, name) {
+  const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  await shareBlob(new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), name, name);
+}
+async function exportExcelAll() {
+  if (!await needXLSX()) return;
+  if (DB.online()) { toast('Mengambil semua data…', 1800); try { DB.merge(await DB.fetchWhere('col=eq.trx')); } catch (e) { toast('Gagal ambil data lama, memakai data di perangkat'); } }
+  const trx = okTrx().slice().sort((a, b) => sortKey(a).localeCompare(sortKey(b)));
+  if (!trx.length) return toast('Belum ada data untuk diexport');
+  const mlabel = k => fmtBln(k);
+  const keys = [...new Set(trx.map(t => t.date.slice(0, 7)))].sort();
+  const rek = keys.map(k => {
+    const l = trx.filter(t => t.date.startsWith(k)), j = jual(l), a = asr(l), am = j.filter(t => !t.antar), an = j.filter(t => t.antar), n = daysIn(k);
+    return { 'Bulan': mlabel(k), 'Transaksi Jual': j.length, 'Galon Terjual': sum(j, t => t.jumlah), 'Rata-rata Galon/Hari': Math.round(sum(j, t => t.jumlah) / n * 10) / 10, 'Omzet': sum(j, t => t.total), 'Ambil Sendiri (trx)': am.length, 'Ambil Sendiri (galon)': sum(am, t => t.jumlah), 'Diantar (trx)': an.length, 'Diantar (galon)': sum(an, t => t.jumlah), 'Transaksi Asrama': a.length, 'Galon ke Asrama': sum(a, t => t.jumlah), 'Pengeluaran': sum(okExp().filter(e => e.date.startsWith(k)), e => e.jumlahBiaya) };
+  });
+  const J = jual(trx); rek.push({ 'Bulan': 'TOTAL', 'Transaksi Jual': J.length, 'Galon Terjual': sum(J, t => t.jumlah), 'Rata-rata Galon/Hari': '', 'Omzet': sum(J, t => t.total), 'Ambil Sendiri (trx)': J.filter(t => !t.antar).length, 'Ambil Sendiri (galon)': sum(J.filter(t => !t.antar), t => t.jumlah), 'Diantar (trx)': J.filter(t => t.antar).length, 'Diantar (galon)': sum(J.filter(t => t.antar), t => t.jumlah), 'Transaksi Asrama': asr(trx).length, 'Galon ke Asrama': sum(asr(trx), t => t.jumlah), 'Pengeluaran': sum(okExp(), e => e.jumlahBiaya) });
+  const km = {}; trx.forEach(t => { const k = t.date.slice(0, 7) + '|' + (t.kasir || 'Tidak diketahui'); (km[k] ||= []).push(t); });
+  const rekK = Object.keys(km).sort().map(k => { const [m, n] = k.split('|'), l = km[k]; return { 'Bulan': mlabel(m), 'Kasir': n, 'Jumlah Transaksi': l.length, 'Transaksi Jual': jual(l).length, 'Galon Terjual': sum(jual(l), t => t.jumlah), 'Omzet Dicatat': sum(jual(l), t => t.total), 'Transaksi Asrama': asr(l).length }; });
+  const raw = trx.map(t => ({ 'Tanggal': t.date, 'Waktu': hhmmOf(t), 'Nama': t.customerName, 'Tipe': t.isAsrama ? 'Asrama' : 'Jual', 'Jumlah Galon': t.jumlah, 'Ukuran': t.ukuran === 'kecil' ? 'Kecil' : 'Besar', 'Pengambilan': t.isAsrama ? '-' : (t.antar ? 'Diantar' : 'Ambil sendiri'), 'Alamat': t.address || '', 'Metode Bayar': t.isAsrama ? '-' : bayarLabel(t.payment), 'Catatan': t.catatan || '', 'Kasir': t.kasir || '', 'Total (Rp)': t.isAsrama ? 0 : t.total }));
+  const pg = okExp().slice().reverse().map(e => ({ 'Tanggal': e.date, 'Waktu': hhmmOf(e), 'Jenis': e.kategori, 'Biaya (Rp)': e.jumlahBiaya, 'Bukti': e.bukti || '', 'Keterangan': e.keterangan || '', 'Kasir': e.kasir || '' }));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rek), 'Rekap Bulanan');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rekK), 'Rekap per Kasir');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(raw), 'Transaksi');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(pg.length ? pg : [{ 'Info': 'Belum ada pengeluaran' }]), 'Pengeluaran');
+  await saveXlsx(wb, `aquaners-laporan-${today()}.xlsx`);
+}
+async function exportAsramaMatrix(ym) {
+  if (!await needXLSX()) return;
+  const as = asr(trxMonth(ym)); if (!as.length) return toast('Belum ada data asrama di bulan itu');
+  const n = daysIn(ym), names = [...new Set(as.map(t => t.customerName))].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  const mx = {}; for (let d = 1; d <= n; d++) { mx[d] = {}; names.forEach(x => mx[d][x] = 0); }
+  as.forEach(t => { mx[+t.date.slice(8, 10)][t.customerName] += t.jumlah; });
+  const rows = [['TANGGAL', ...names]]; for (let d = 1; d <= n; d++) rows.push([d, ...names.map(x => mx[d][x] || '')]);
+  const rata = ['RATA-RATA'], jum = ['JUMLAH'];
+  names.forEach(x => { let t = 0, a = 0; for (let d = 1; d <= n; d++) { const v = mx[d][x]; if (v > 0) { t += v; a++; } } jum.push(t); rata.push(a ? Math.round(t / a * 10) / 10 : 0); });
+  rows.push(rata, jum);
+  const ws = XLSX.utils.aoa_to_sheet(rows); ws['!cols'] = [{ wch: 10 }, ...names.map(() => ({ wch: 10 }))];
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, ('Asrama ' + fmtBln(ym)).slice(0, 31));
+  await saveXlsx(wb, `aquaners-rincian-asrama-${ym}.xlsx`);
+}
+/* ============================================================
+   AREA OWNER (ikon ⚙): pengaturan, data (backup/import/reset), koneksi, riwayat perubahan
+   ============================================================ */
+function vOwner() {
+  const m = $('#main');
+  if (!S.owner) {
+    m.innerHTML = `<div class="card" style="max-width:440px;margin:30px auto;width:100%"><h1>Area Owner</h1>
+      <div class="hint" style="margin:6px 0 12px">Masukkan PIN supervisor untuk membuka pengaturan, backup, dan reset data.</div>
+      <input class="in" id="pw" type="password" inputmode="numeric" placeholder="PIN" autocomplete="off">
+      ${ST().pin === '123456' ? '<div class="hint" style="margin-top:8px">PIN awal: <b>123456</b>. Segera ganti di tab Pengaturan.</div>' : ''}
+      <button class="btn" id="pgo">Masuk</button>
+      <button class="btn ghost" id="forgot">Lupa PIN?</button></div>`;
+    const go = () => { if ($('#pw').value.trim() === String(ST().pin)) { S.owner = true; ssSet('owner', '1'); render(); } else toast('PIN salah'); };
+    $('#pgo').onclick = go; $('#pw').onkeydown = e => { if (e.key === 'Enter') go(); }; setTimeout(() => $('#pw')?.focus(), 50);
+    $('#forgot').onclick = async () => {
+      const code = await ask({ title: 'Reset PIN', body: 'Masukkan kode darurat (yang dicatat owner saat setup) untuk mengembalikan PIN ke 123456.', input: { label: 'Kode darurat', required: 'Isi kode darurat' }, ok: 'Reset PIN' });
+      if (!code) return;
+      if (await sha256('aq-recovery:' + code.toUpperCase().replace(/\s+/g, '')) !== RECOVERY_HASH) return toast('Kode darurat salah');
+      const st = ST(); st.pin = '123456'; DB.put('settings', st); toast('PIN dikembalikan ke 123456. Segera ganti.', 4500); render();
+    };
+    return;
+  }
+  const tabs = [['atur', 'Pengaturan'], ['data', 'Data'], ['koneksi', 'Koneksi'], ['log', 'Riwayat ubah']];
+  m.innerHTML = `<div class="row between"><h1>Owner</h1><button class="btn sm ghost" id="out">Keluar</button></div>
+    <div class="ownertabs">${tabs.map(([k, l]) => `<button data-o="${k}" class="${S.ownerTab === k ? 'sel' : ''}">${l}</button>`).join('')}</div><div id="osub" class="sec"></div>`;
+  $('#out').onclick = () => { S.owner = false; ssSet('owner', '0'); S.tab = 'kasir'; shell(); render(); };
+  $$('[data-o]').forEach(b => b.onclick = () => { S.ownerTab = b.dataset.o; vOwner(); });
+  ({ atur: oAtur, data: oData, koneksi: oKoneksi, log: oLog })[S.ownerTab]($('#osub'));
+}
+function chipEditor(el, key, label, ph) {
+  const s = ST(), list = s[key] || [];
+  el.innerHTML = `<h2>${label}</h2><div class="chiprow">${list.map((n, i) => `<span class="chip">${esc(n)}<button data-x="${i}" aria-label="Hapus ${esc(n)}">×</button></span>`).join('') || '<span class="hint">Belum ada.</span>'}</div>
+    <div class="addrow" style="margin-top:10px"><input class="in" placeholder="${esc(ph)}"><button class="btn">Tambah</button></div>`;
+  $$('[data-x]', el).forEach(b => b.onclick = () => { const st = ST(); st[key].splice(+b.dataset.x, 1); DB.put('settings', st); chipEditor(el, key, label, ph); toast('Disimpan'); });
+  $('button.btn', el).onclick = () => { const i = $('input', el), v = i.value.trim(); if (!v) return; const st = ST(); if (!st[key].includes(v)) st[key].push(v); DB.put('settings', st); chipEditor(el, key, label, ph); toast('Disimpan'); };
+  $('input', el).onkeydown = e => { if (e.key === 'Enter') $('button.btn', el).click(); };
+}
+function oAtur(el) {
+  const s = ST(), h = s.harga;
+  el.innerHTML = `<div class="card"><h2>Info toko &amp; struk</h2>
+      <label class="f">Nama toko<input class="in" data-s="toko" value="${esc(s.toko)}"></label>
+      <label class="f">Tagline<input class="in" data-s="tagline" value="${esc(s.tagline)}"></label>
+      <label class="f">Alamat<input class="in" data-s="alamat" value="${esc(s.alamat)}"></label>
+      <label class="f">Kontak (di struk)<input class="in" data-s="kontak" value="${esc(s.kontak)}"></label>
+      <label class="f">Kalimat penutup struk<input class="in" data-s="footer" value="${esc(s.footer)}"></label></div>
+    <div class="card"><h2>Harga galon (Rp)</h2><div class="grid2">
+      <label class="f">Besar · ambil sendiri<input class="in" inputmode="numeric" data-h="besarAmbil" value="${h.besarAmbil}"></label>
+      <label class="f">Besar · diantar<input class="in" inputmode="numeric" data-h="besarAntar" value="${h.besarAntar}"></label>
+      <label class="f">Kecil · ambil sendiri<input class="in" inputmode="numeric" data-h="kecilAmbil" value="${h.kecilAmbil}"></label>
+      <label class="f">Kecil · diantar<input class="in" inputmode="numeric" data-h="kecilAntar" value="${h.kecilAntar}"></label></div>
+      <div class="hint" style="margin-top:8px">Harga baru berlaku untuk transaksi berikutnya. Transaksi lama tidak berubah.</div></div>
+    <div class="card" id="ck"></div><div class="card" id="ca"></div><div class="card" id="cg"></div>
+    <div class="card"><h2>PIN supervisor</h2><div class="hint" style="margin-bottom:8px">Dipakai untuk edit/hapus transaksi dan membuka area owner.</div>
+      <input class="in" id="np" type="password" inputmode="numeric" placeholder="PIN baru (min. 4 angka)" autocomplete="off"><button class="btn" id="spw">Ganti PIN</button></div>
+    <div class="card"><h2>Waktu manual (uji coba)</h2><div class="hint" style="margin-bottom:8px">Untuk mencoba tanggal lain. Transaksi yang dibuat saat waktu manual aktif memakai tanggal itu, jadi matikan lagi setelah selesai.</div>
+      ${TIME_OVERRIDE ? '<div class="banner" style="margin-bottom:8px">Waktu manual AKTIF.</div>' : ''}
+      <input class="in" type="datetime-local" id="tm" value="${TIME_OVERRIDE ? ldt(TIME_OVERRIDE) : ldt(new Date())}">
+      <div class="grid2"><button class="btn ghost" id="tmset" style="margin-top:12px">Pakai waktu ini</button><button class="btn ghost" id="tmoff" style="margin-top:12px">Kembali otomatis</button></div></div>`;
+  $$('[data-s]', el).forEach(i => i.onchange = () => { const st = ST(); st[i.dataset.s] = i.value.trim(); DB.put('settings', st); toast('Disimpan'); if (i.dataset.s === 'toko') { shell(); render(); } });
+  $$('[data-h]', el).forEach(i => i.onchange = () => { const st = ST(); st.harga[i.dataset.h] = parseNum(i.value); DB.put('settings', st); i.value = st.harga[i.dataset.h]; toast('Harga disimpan'); });
+  chipEditor($('#ck', el), 'kasir', 'Daftar kasir', 'Nama kasir baru');
+  chipEditor($('#ca', el), 'asrama', 'Daftar asrama', 'Nama asrama baru');
+  chipEditor($('#cg', el), 'kategoriPg', 'Jenis pengeluaran', 'Jenis pengeluaran baru');
+  $('#spw', el).onclick = () => { const v = $('#np', el).value.trim(); if (!/^\d{4,}$/.test(v)) return toast('PIN minimal 4 angka'); const st = ST(); st.pin = v; DB.put('settings', st); $('#np', el).value = ''; toast('PIN diganti'); };
+  $('#tmset', el).onclick = () => { const d = new Date($('#tm', el).value); if (isNaN(d)) return toast('Isi tanggal & jam dulu'); TIME_OVERRIDE = d; lsSet('timeOverride', d.toISOString()); tickClock(); vOwner(); toast('Waktu manual aktif'); };
+  $('#tmoff', el).onclick = () => { TIME_OVERRIDE = null; lsSet('timeOverride', null); tickClock(); vOwner(); toast('Waktu kembali otomatis'); };
+}
+const ldt = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
+/* ---------- DATA ---------- */
+function oData(el) {
+  const cnt = c => DB.list(c).filter(d => !d.batal && !d.hapus).length;
+  el.innerHTML = `<div class="card"><h2>Backup data</h2><div class="hint">Simpan semua data (transaksi, pelanggan, pengeluaran, pengaturan) ke satu file .json. Simpan di Google Drive atau kirim ke WA sendiri.</div><button class="btn" id="exp">Export backup</button></div>
+    <div class="card"><h2>Import dari backup</h2><div class="hint">Bisa membaca backup lama dari aplikasi Aquaners (APK/web lama) maupun backup dari web baru ini. Data yang sudah ada tidak akan dobel.</div>
+      <label class="btn ghost" for="impF" style="cursor:pointer">Pilih file backup (.json)</label><input id="impF" type="file" accept=".json,application/json" hidden></div>
+    <div class="card" style="border-color:#efc3bd"><h2 style="color:var(--bad)">Reset data</h2><div class="hint">Untuk mulai dari nol setelah uji coba. Tidak bisa dibatalkan, jadi export backup dulu.</div>
+      <div class="kv" style="margin:8px 0"><div><span>Transaksi</span><b>${cnt('trx')}</b></div><div><span>Pengeluaran</span><b>${cnt('exp')}</b></div><div><span>Pelanggan</span><b>${cnt('cust')}</b></div></div>
+      <button class="btn danger" id="rst1">Reset transaksi saja</button><div class="hint">Menghapus transaksi, pengeluaran, dan pelanggan. Pengaturan, harga, dan PIN tetap.</div>
+      <button class="btn danger" id="rst2">Reset total</button><div class="hint">Menghapus semuanya termasuk pengaturan (PIN kembali 123456). Koneksi online tetap tersimpan.</div></div>`;
+  $('#exp', el).onclick = exportBackup;
+  $('#impF', el).onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) importBackup(f); };
+  $('#rst1', el).onclick = () => resetData('transaksi'); $('#rst2', el).onclick = () => resetData('total');
+}
+async function exportBackup() {
+  toast('Menyiapkan backup…');
+  let docs; try { docs = await DB.fetchAll(); } catch (e) { return toast('Gagal mengambil data online: ' + e.message, 5000); }
+  const map = Object.fromEntries(docs.map(d => [d.id, d])); Object.values(DB.pending).forEach(d => map[d.id] = d);
+  const out = { app: APP_ID, versi: 1, dibuat: realISO(), jumlah: Object.keys(map).length, docs: Object.values(map) };
+  await shareBlob(new Blob([JSON.stringify(out)], { type: 'application/json' }), `Backup-Kasir-Aquaners-${dstr(new Date())}_${hhmm(new Date()).replace(':', '')}.json`, 'Backup Kasir Aquaners');
+}
+const OLD_TS = '2001-01-01T00:00:00.000Z';
+function oldToDocs(data) {   // format lama: {app:'aquaners-kasir', customers, transactions, expenses}
+  const docs = [], tsOf = (d, t) => { const x = new Date(d + 'T' + String(t || '00:00').replace('.', ':').padStart(5, '0') + ':00+07:00'); return isNaN(x) ? OLD_TS : x.toISOString(); };
+  (data.customers || []).forEach(c => { if (c && c.id && c.name) docs.push({ id: c.id, col: 'cust', tgl: null, data: { ...c }, updated_at: OLD_TS }); });
+  (data.transactions || []).forEach(t => { if (t && t.id && t.date) docs.push({ id: t.id, col: 'trx', tgl: t.date, data: { log: [], ...t, at: t.at || tsOf(t.date, t.time) }, updated_at: tsOf(t.date, t.time) }); });
+  (data.expenses || []).forEach(e => { if (e && e.id && e.date) docs.push({ id: e.id, col: 'exp', tgl: e.date, data: { log: [], ...e, at: e.at || tsOf(e.date, e.time) }, updated_at: tsOf(e.date, e.time) }); });
+  return docs;
+}
+async function importBackup(file) {
+  let data; try { data = JSON.parse(await file.text()); } catch (e) { return toast('File tidak bisa dibaca. Pastikan ini file backup .json', 4000); }
+  let docs, ket;
+  if (data && data.app === APP_ID && Array.isArray(data.docs)) { docs = data.docs; ket = `File berisi ${docs.length} data, dibuat ${String(data.dibuat).slice(0, 10)}.`; }
+  else if (data && Array.isArray(data.transactions) && Array.isArray(data.customers)) {
+    docs = oldToDocs(data); ket = `Backup lama Aquaners: ${data.transactions.length} transaksi, ${data.customers.length} pelanggan, ${(data.expenses || []).length} pengeluaran.`;
+  } else return toast('Ini bukan file backup Aquaners', 4000);
+  if (!await ask({ title: 'Import backup?', body: ket + '\nData yang sama tidak akan dobel.', ok: 'Import' })) return;
+  let baru = 0, upd = 0, skip = 0;
+  for (const d of docs) {
+    if (!d || !d.id || !d.col || !d.data || d.id === 'reset' || (d.col === 'settings' && DB.docs.settings && data.app !== APP_ID)) { skip++; continue; }
+    const cur = DB.docs[d.id];
+    if (cur && new Date(cur.updated_at) >= new Date(d.updated_at)) { skip++; continue; }
+    cur ? upd++ : baru++; DB.docs[d.id] = d; DB.pending[d.id] = d;
+  }
+  DB.saveCache(); DB.flush(); shell(); render();
+  ask({ title: 'Import selesai', body: `${baru} data baru ditambahkan, ${upd} diperbarui, ${skip} dilewati karena sudah ada atau lebih baru.\n\nData lama akan terkirim ke online di latar belakang (lihat status di kanan atas).`, ok: 'OK', noCancel: true });
+}
+async function resetData(scope) {
+  const total = scope === 'total';
+  const s1 = await ask({ title: total ? 'Reset total?' : 'Reset transaksi?', body: 'Sebaiknya export backup dulu. Tekan "Export dulu" untuk menyimpan backup, lalu ulangi reset.', ok: 'Lanjut tanpa backup', cancel: 'Export dulu', danger: true });
+  if (!s1) return exportBackup();
+  const typed = await ask({ title: 'Ketik HAPUS untuk konfirmasi', body: total ? 'Semua data dan pengaturan dihapus dari semua perangkat yang tersambung.' : 'Transaksi, pengeluaran, dan pelanggan dihapus dari semua perangkat yang tersambung.', input: { label: 'Konfirmasi', ph: 'HAPUS', required: 'Ketik HAPUS' }, ok: 'Hapus permanen', danger: true });
+  if (typed == null) return;
+  if (typed.trim().toUpperCase() !== 'HAPUS') return toast('Konfirmasi salah, tidak ada yang dihapus');
+  try { await DB.remove(total ? 'id=not.is.null' : 'col=in.(' + TX_COLS.join(',') + ')'); }
+  catch (e) { return toast('Gagal menghapus data online: ' + e.message, 6000); }
+  const at = realISO(); wipeLocal(total ? null : TX_COLS, at);
+  DB.put('meta', { id: 'reset', at, scope }); lsSet('resetSeen', at);
+  if (total) { DB.put('settings', JSON.parse(JSON.stringify(DEF_SETTINGS))); S.kasir = ''; lsSet('kasir', ''); S.owner = false; ssSet('owner', '0'); }
+  S.rcpt = null; S.tab = 'kasir'; shell(); render();
+  toast(total ? 'Reset total selesai' : 'Data transaksi direset. Mulai dari nol!', 3500);
+}
+
+/* ---------- KONEKSI ---------- */
+function oKoneksi(el) {
+  const n = Object.keys(DB.pending).length;
+  el.innerHTML = `<div class="card"><h2>Koneksi online (Supabase)</h2>
+    <label class="f">Project URL<input class="in" id="cu" value="${esc(DB.cfg.url)}"></label>
+    <label class="f">Publishable / anon key<input class="in" id="ck" value="${esc(DB.cfg.key)}"></label>
+    <div class="hint" style="margin-top:10px">Status: <b>${DB.status === 'on' ? 'Terhubung' : DB.status === 'local' ? 'Mode lokal (data hanya di perangkat ini)' : DB.status === 'sync' ? 'Menyimpan…' : 'Belum tersambung'}</b>
+      ${DB.lastSync ? '<br>Sinkron terakhir: ' + hhmm(DB.lastSync) : ''}${DB.lastErr ? '<br>Error terakhir: ' + esc(DB.lastErr) : ''}${n ? `<br>${n} data menunggu dikirim.` : ''}</div>
+    <button class="btn" id="sc">Simpan &amp; sambungkan</button>
+    <button class="btn ghost" id="sn">Sinkronkan sekarang</button>
+    <div class="hint" style="margin-top:8px">Perangkat lain cukup membuka link web yang sama; koneksi sudah tertanam. Jangan pernah memasukkan password database atau service_role key ke sini.</div></div>`;
+  $('#sc', el).onclick = async () => {
+    DB.cfg = { url: $('#cu', el).value.trim(), key: $('#ck', el).value.trim() }; lsSet('cfg', DB.cfg);
+    if (!DB.online()) { DB.status = 'local'; setStatus(); return vOwner(); }
+    for (const [id, d] of Object.entries(DB.docs)) DB.pending[id] = d;
+    toast('Menyambungkan…'); await DB.pull(); await DB.flush(); vOwner();
+    toast(DB.status === 'on' ? 'Tersambung ✓' : 'Gagal tersambung. Cek URL & key.', 4000);
+  };
+  $('#sn', el).onclick = async () => { toast('Sinkronisasi…'); await DB.pull(); await DB.flush(); vOwner(); };
+}
+
+/* ---------- RIWAYAT UBAH ---------- */
+function oLog(el) {
+  const items = [];
+  [...DB.list('trx').map(d => ['Transaksi', d, d.customerName + ' · ' + d.jumlah + ' galon']), ...DB.list('exp').map(d => ['Pengeluaran', d, d.kategori + ' · ' + rp(d.jumlahBiaya)])].forEach(([k, d, lbl]) => (d.log || []).forEach(l => items.push({ k, lbl, d, ...l })));
+  items.sort((a, b) => b.at.localeCompare(a.at));
+  el.innerHTML = `<div class="card"><h2>Riwayat perubahan</h2><div class="hint" style="margin-bottom:8px">Siapa yang mengubah atau menghapus transaksi/pengeluaran, kapan, dan alasannya. ${CACHE_DAYS} hari terakhir.</div>
+    <div class="list">${items.length ? items.slice(0, 100).map(i => `<div class="item"><div class="main"><div class="t">${esc(i.aksi)} ${esc(i.k.toLowerCase())}: ${esc(i.lbl)}</div><div class="s">${esc(i.oleh)} · ${fmtTglS(dstr(new Date(i.at)))} ${hhmm(new Date(i.at))}${i.ket ? ' · ' + esc(i.ket) : ''}</div></div></div>`).join('') : '<div class="empty">Belum ada perubahan.</div>'}</div></div>`;
+}
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+(async function boot() {
+  DB.init();
+  const ov = lsGet('timeOverride', null); if (ov) { const d = new Date(ov); if (!isNaN(d)) TIME_OVERRIDE = d; }
+  if (!DB.online() || DB.get('settings')) seedIfEmpty();   // perangkat baru yang online: tunggu data online dulu
+  shell(); render(); pickKasir();
+  if (DB.online()) { await DB.pull(); if (DB.status !== 'off') seedIfEmpty(); shell(); render(); }
+  let lastDay = today();
+  setInterval(() => { tickClock(); if (today() !== lastDay) { lastDay = today(); if (!$('#scrim')) render(); } }, 15000);
+  setInterval(async () => { if (document.hidden || !DB.online()) return; await DB.pull(); softRefresh(); }, 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && DB.online()) DB.pull().then(softRefresh); });
+  window.addEventListener('online', () => DB.flush());
+})();
+
+</script>
+</body>
+</html>
