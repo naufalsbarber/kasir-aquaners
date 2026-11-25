@@ -577,13 +577,17 @@ async function saveStrukImage(t) {
 }
 async function sendStrukWA(t, phone) {
   const num = normWA(phone); if (!num) { toast('Isi nomor WhatsApp dulu'); return false; }
-  const waWin = window.open('', '_blank');                      // dibuka dulu saat klik agar tidak diblokir
   const cv = await drawStruk(t, { color: true });
-  const blob = await canvasBlob(cv);
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = strukName(t, 'png'); document.body.appendChild(a); a.click(); a.remove();
+  const blob = await canvasBlob(cv), name = strukName(t, 'png');
+  const file = new File([blob], name, { type: 'image/png' });
+  if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {   // menu Bagikan: pilih WhatsApp, gambar langsung terlampir
+    try { await navigator.share({ files: [file], title: 'Struk Aquaners' }); return true; }
+    catch (e) { if (e.name === 'AbortError') return false; }
+  }
+  // cadangan: simpan gambar + buka chat lewat link biasa (bukan jendela kosong, yang gagal di app terpasang)
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-  const url = 'https://wa.me/' + num;
-  if (waWin && !waWin.closed) waWin.location.href = url; else window.open(url, '_blank');
+  const l = document.createElement('a'); l.href = 'https://wa.me/' + num; l.target = '_blank'; l.rel = 'noopener'; document.body.appendChild(l); l.click(); l.remove();
   toast('Gambar struk tersimpan di Download. Chat WA sudah dibuka: lampirkan gambarnya lewat ikon klip.', 6000);
   return true;
 }
