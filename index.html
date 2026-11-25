@@ -484,7 +484,7 @@ function applyRemoteReset() {   // perangkat lain ikut bersih setelah reset
    STRUK — digambar langsung di canvas (tanpa html2canvas)
    • thermal: 384px = kertas 58mm, hitam-putih, ukuran huruf besar
    • warna  : untuk dikirim ke WhatsApp / disimpan sebagai gambar
-   Cetak: bikin PDF lebar 48mm lalu Bagikan → pilih Thermer
+   Cetak: bikin gambar PNG (384px = 58mm) lalu Bagikan → pilih Thermer
    ============================================================ */
 function wrapText(x, text, maxW) {
   const words = String(text ?? '').split(/\s+/).filter(Boolean), lines = []; let cur = '';
@@ -559,16 +559,12 @@ async function drawStruk(t, { color = false } = {}) {
 }
 const strukName = (t, ext) => `struk-aquaners-${t.date}-${hhmmOf(t).replace(':', '')}.${ext}`;
 
-async function printStruk(t) {
+async function printStruk(t) {   // gambar PNG (bukan PDF) supaya Thermer/app printer bisa langsung mencetaknya
   toast('Menyiapkan struk…', 1800);
   const cv = await drawStruk(t, { color: false });
-  try {
-    const pdf = await pdfFromCanvas(cv, { wMM: 48, quality: .95 });
-    const r = await shareBlob(pdf, strukName(t, 'pdf'), 'Struk Aquaners');
-    if (r === 'shared') toast('Pilih Thermer di menu, lalu cetak');
-  } catch (e) {   // tanpa internet: kirim gambar
-    await shareBlob(await canvasBlob(cv), strukName(t, 'png'), 'Struk Aquaners');
-  }
+  const r = await shareBlob(await canvasBlob(cv), strukName(t, 'png'), 'Struk Aquaners');
+  if (r === 'shared') toast('Pilih Thermer di menu, lalu cetak');
+  else if (r === 'download') toast('Gambar struk tersimpan di Download. Buka lewat Thermer untuk mencetak.', 5000);
 }
 async function saveStrukImage(t) {
   const cv = await drawStruk(t, { color: true });
